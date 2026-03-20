@@ -132,7 +132,7 @@
 import { PencilIcon, Trash2Icon, EyeIcon } from 'lucide-vue-next'
 import type { Theme } from '~/types'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'admin', middleware: 'admin' })
 useHead({ title: 'Themes — Admin Refugallo' })
 
 const { getAllThemes, createTheme, updateTheme, deleteTheme } = useThemes()

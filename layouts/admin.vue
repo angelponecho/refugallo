@@ -63,8 +63,6 @@
 <script setup lang="ts">
 import { UsersIcon, LayoutGridIcon, LogOutIcon } from 'lucide-vue-next'
 
-definePageMeta({ middleware: 'admin' })
-
 const route = useRoute()
 const { profile, logout } = useAuth()
 

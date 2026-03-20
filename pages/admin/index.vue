@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { LayoutGridIcon, UsersIcon, HeartIcon, EyeIcon } from 'lucide-vue-next'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'admin', middleware: 'admin' })
 useHead({ title: 'Admin Dashboard — Refugallo' })
 
 const supabase = useSupabaseClient()

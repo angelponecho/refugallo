@@ -94,7 +94,7 @@
 import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
 import type { Profile } from '~/types'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'admin', middleware: 'admin' })
 useHead({ title: 'Usuarios — Admin Refugallo' })
 
 const supabase = useSupabaseClient()
