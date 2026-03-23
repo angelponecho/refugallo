@@ -7,8 +7,7 @@
       </div>
       <AppButton @click="openCreate">Añadir usuario</AppButton>
     </div>
-
-    <DataTable
+    <AdminDataTable
       :rows="filteredUsers"
       :columns="columns"
       search-placeholder="Buscar por nombre..."
@@ -54,10 +53,10 @@
           <Trash2Icon class="w-4 h-4" />
         </button>
       </template>
-    </DataTable>
+    </AdminDataTable>
 
     <!-- Modal editar/crear -->
-    <ModalForm
+    <AdminModalForm
       v-model="modalOpen"
       :title="editingUser ? 'Editar usuario' : 'Nuevo usuario'"
       :loading="saving"
@@ -79,7 +78,7 @@
           <option value="admin">Admin</option>
         </select>
       </div>
-    </ModalForm>
+    </AdminModalForm>
 
     <!-- Modal confirmar eliminar -->
     <AppModal v-model="deleteModalOpen" title="Eliminar usuario" size="sm">

@@ -9,7 +9,7 @@
     </div>
 
     <!-- Tabla -->
-    <DataTable
+    <AdminDataTable
       :rows="themes ?? []"
       :columns="columns"
       search-placeholder="Buscar themes..."
@@ -69,10 +69,10 @@
           <Trash2Icon class="w-4 h-4" />
         </button>
       </template>
-    </DataTable>
+    </AdminDataTable>
 
     <!-- Modal crear/editar -->
-    <ModalForm
+    <AdminModalForm
       v-model="modalOpen"
       :title="editingTheme ? `Editar: ${editingTheme.title}` : 'Nuevo theme'"
       :loading="saving"
@@ -113,7 +113,7 @@
         <img :src="form.heroImg" alt="Preview" class="w-full h-32 object-cover" />
         <p class="text-xs text-text-muted px-3 py-2">Preview hero</p>
       </div>
-    </ModalForm>
+    </AdminModalForm>
 
     <!-- Modal confirmar eliminar -->
     <AppModal v-model="deleteModalOpen" title="Eliminar theme" size="sm">
@@ -142,6 +142,7 @@ const { data: themes, refresh } = await useAsyncData('admin-themes', getAllTheme
   default: () => [] as Theme[],
   server: false,
 })
+console.log('los themes son ',themes.value)
 
 const columns = [
   { key: 'order', label: '#' },
