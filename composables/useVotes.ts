@@ -1,5 +1,7 @@
+import type { Database } from '~/types/database.types'
+
 export const useVotes = () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
   const user = useSupabaseUser()
   const toast = useToastStore()
 

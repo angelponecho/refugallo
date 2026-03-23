@@ -105,15 +105,19 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 
--- 3. POLÍTICA DE ESCRITURA PARA THEMES (requiere profiles)
+-- 3. FUNCIÓN HELPER ANTI-RECURSIÓN + POLÍTICA DE ESCRITURA PARA THEMES
 -- ============================================================
-CREATE POLICY "themes_admin_write" ON public.themes
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
+-- is_admin() usa SECURITY DEFINER para leer profiles sin triggear RLS
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
   );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+CREATE POLICY "themes_admin_write" ON public.themes
+  FOR ALL USING (public.is_admin());
 
 
 -- 4. TABLA VOTES

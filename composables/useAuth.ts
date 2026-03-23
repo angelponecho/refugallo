@@ -1,7 +1,8 @@
 import type { Profile } from '~/types'
+import type { Database } from '~/types/database.types'
 
 export const useAuth = () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
   const user = useSupabaseUser()
   const profile = useState<Profile | null>('profile', () => null)
 

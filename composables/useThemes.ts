@@ -1,7 +1,8 @@
 import type { Theme } from '~/types'
+import type { Database } from '~/types/database.types'
 
 export const useThemes = () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
 
   async function getThemes(): Promise<Theme[]> {
     const { data } = await supabase
@@ -13,10 +14,11 @@ export const useThemes = () => {
   }
 
   async function getAllThemes(): Promise<Theme[]> {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('themes')
       .select('*')
       .order('order', { ascending: true })
+    if (error) throw error
     return (data as Theme[]) ?? []
   }
 

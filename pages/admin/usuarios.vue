@@ -9,9 +9,9 @@
     </div>
 
     <DataTable
-      :rows="users"
+      :rows="filteredUsers"
       :columns="columns"
-      search-placeholder="Buscar por nombre o email..."
+      search-placeholder="Buscar por nombre..."
     >
       <template #filters>
         <select
@@ -63,6 +63,10 @@
       :loading="saving"
       @submit="handleSave"
     >
+      <template v-if="!editingUser">
+        <AppInput v-model="form.email" label="Email" type="email" placeholder="email@ejemplo.com" required />
+        <AppInput v-model="form.password" label="Contraseña" type="password" placeholder="Mínimo 6 caracteres" required />
+      </template>
       <AppInput v-model="form.name" label="Nombre" placeholder="Nombre del usuario" required />
       <div class="flex flex-col gap-1.5">
         <label class="text-sm font-medium text-text-muted" for="role-select">Rol</label>
@@ -80,7 +84,10 @@
     <!-- Modal confirmar eliminar -->
     <AppModal v-model="deleteModalOpen" title="Eliminar usuario" size="sm">
       <div class="flex flex-col gap-4">
-        <p class="text-text-muted">¿Seguro que quieres eliminar a <strong class="text-white">{{ deletingUser?.name }}</strong>? Esta acción no se puede deshacer.</p>
+        <p class="text-text-muted">
+          ¿Seguro que quieres eliminar a <strong class="text-white">{{ deletingUser?.name }}</strong>?
+          Esta acción eliminará su cuenta y no se puede deshacer.
+        </p>
         <div class="flex gap-3 justify-end">
           <AppButton variant="ghost" @click="deleteModalOpen = false">Cancelar</AppButton>
           <AppButton variant="danger" :loading="deleting" @click="handleDelete">Eliminar</AppButton>
@@ -93,17 +100,18 @@
 <script setup lang="ts">
 import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
 import type { Profile } from '~/types'
+import type { Database } from '~/types/database.types'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 useHead({ title: 'Usuarios — Admin Refugallo' })
 
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<Database>()
 const toast = useToastStore()
 
 const { data: users, refresh } = await useAsyncData('admin-users', async () => {
   const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false })
   return (data as Profile[]) ?? []
-})
+}, { server: false, default: () => [] as Profile[] })
 
 const roleFilter = ref('')
 const columns = [
@@ -112,21 +120,26 @@ const columns = [
   { key: 'created_at', label: 'Registro' },
 ]
 
-// Modal
+const filteredUsers = computed(() => {
+  if (!roleFilter.value) return users.value ?? []
+  return (users.value ?? []).filter(u => u.role === roleFilter.value)
+})
+
+// Modal crear/editar
 const modalOpen = ref(false)
 const editingUser = ref<Profile | null>(null)
-const form = reactive({ name: '', role: 'user' as 'user' | 'admin' })
+const form = reactive({ email: '', password: '', name: '', role: 'user' as 'user' | 'admin' })
 const saving = ref(false)
 
 function openCreate() {
   editingUser.value = null
-  Object.assign(form, { name: '', role: 'user' })
+  Object.assign(form, { email: '', password: '', name: '', role: 'user' })
   modalOpen.value = true
 }
 
 function openEdit(user: Profile) {
   editingUser.value = user
-  Object.assign(form, { name: user.name ?? '', role: user.role })
+  Object.assign(form, { email: '', password: '', name: user.name ?? '', role: user.role })
   modalOpen.value = true
 }
 
@@ -134,14 +147,28 @@ async function handleSave() {
   saving.value = true
   try {
     if (editingUser.value) {
-      await supabase.from('profiles').update({ name: form.name, role: form.role }).eq('id', editingUser.value.id)
+      // Actualizar nombre y rol en profiles
+      const { error } = await supabase
+        .from('profiles')
+        .update({ name: form.name, role: form.role })
+        .eq('id', editingUser.value.id)
+      if (error) throw error
       toast.show('Usuario actualizado', 'success')
+    } else {
+      // Crear usuario via API del servidor (usa service role key)
+      await $fetch('/api/admin/users', {
+        method: 'POST',
+        body: { email: form.email, password: form.password, name: form.name, role: form.role },
+      })
+      toast.show('Usuario creado', 'success')
     }
     modalOpen.value = false
     await refresh()
+  } catch (e: any) {
+    toast.show(e?.data?.message ?? e?.message ?? 'Error al guardar', 'error')
+  } finally {
+    saving.value = false
   }
-  catch { toast.show('Error al guardar', 'error') }
-  finally { saving.value = false }
 }
 
 // Eliminar
@@ -158,13 +185,16 @@ async function handleDelete() {
   if (!deletingUser.value) return
   deleting.value = true
   try {
-    await supabase.from('profiles').delete().eq('id', deletingUser.value.id)
+    // Eliminar auth user (cascade borra el profile)
+    await $fetch(`/api/admin/users/${deletingUser.value.id}`, { method: 'DELETE' as any })
     toast.show('Usuario eliminado', 'success')
     deleteModalOpen.value = false
     await refresh()
+  } catch (e: any) {
+    toast.show(e?.data?.message ?? e?.message ?? 'Error al eliminar', 'error')
+  } finally {
+    deleting.value = false
   }
-  catch { toast.show('Error al eliminar', 'error') }
-  finally { deleting.value = false }
 }
 
 function formatDate(d: string) {

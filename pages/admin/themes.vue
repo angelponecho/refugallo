@@ -138,7 +138,10 @@ useHead({ title: 'Themes — Admin Refugallo' })
 const { getAllThemes, createTheme, updateTheme, deleteTheme } = useThemes()
 const toast = useToastStore()
 
-const { data: themes, refresh } = await useAsyncData('admin-themes', getAllThemes, { default: () => [] as Theme[] })
+const { data: themes, refresh } = await useAsyncData('admin-themes', getAllThemes, {
+  default: () => [] as Theme[],
+  server: false,
+})
 
 const columns = [
   { key: 'order', label: '#' },

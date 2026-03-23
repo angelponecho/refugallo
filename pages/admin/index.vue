@@ -53,22 +53,22 @@ const supabase = useSupabaseClient()
 const { data: themesCount } = await useAsyncData('admin-themes-count', async () => {
   const { count } = await supabase.from('themes').select('*', { count: 'exact', head: true })
   return count ?? 0
-})
+}, { server: false, default: () => 0 })
 
 const { data: usersCount } = await useAsyncData('admin-users-count', async () => {
   const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
   return count ?? 0
-})
+}, { server: false, default: () => 0 })
 
 const { data: votesCount } = await useAsyncData('admin-votes-count', async () => {
   const { count } = await supabase.from('votes').select('*', { count: 'exact', head: true })
   return count ?? 0
-})
+}, { server: false, default: () => 0 })
 
 const { data: visibleCount } = await useAsyncData('admin-visible-count', async () => {
   const { count } = await supabase.from('themes').select('*', { count: 'exact', head: true }).eq('visible', true)
   return count ?? 0
-})
+}, { server: false, default: () => 0 })
 
 const stats = computed(() => [
   { label: 'Themes totales', value: themesCount.value, icon: LayoutGridIcon },
