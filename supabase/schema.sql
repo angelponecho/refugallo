@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS public.votes (
   user_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   theme_id   INTEGER NOT NULL REFERENCES public.themes(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT votes_unique_user_theme UNIQUE (user_id, theme_id)
+  CONSTRAINT votes_unique_user UNIQUE (user_id)
 );
 
 ALTER TABLE public.votes ENABLE ROW LEVEL SECURITY;
@@ -150,16 +150,40 @@ CREATE POLICY "votes_own_insert" ON public.votes
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 
--- 5. FUNCIÓN RPC ATÓMICA PARA VOTAR
+-- 5. FUNCIÓN RPC ATÓMICA PARA VOTAR (UPSERT — un voto activo por usuario)
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.vote_theme(p_theme_id INTEGER)
 RETURNS VOID AS $$
+DECLARE
+  v_old_theme_id INTEGER;
 BEGIN
-  -- Insertar voto — falla con error 23505 si ya existe (UNIQUE constraint)
-  INSERT INTO public.votes (user_id, theme_id)
-  VALUES (auth.uid(), p_theme_id);
+  -- Obtener el voto actual del usuario (si existe)
+  SELECT theme_id INTO v_old_theme_id
+  FROM public.votes
+  WHERE user_id = auth.uid();
 
-  -- Incrementar likes de forma atómica
+  -- Si ya votó por el mismo theme, no hacer nada
+  IF v_old_theme_id = p_theme_id THEN
+    RETURN;
+  END IF;
+
+  IF v_old_theme_id IS NOT NULL THEN
+    -- Cambio de voto: restar likes al theme anterior
+    UPDATE public.themes
+    SET likes = GREATEST(likes - 1, 0)
+    WHERE id = v_old_theme_id;
+
+    -- Actualizar el registro de voto al nuevo theme
+    UPDATE public.votes
+    SET theme_id = p_theme_id, created_at = NOW()
+    WHERE user_id = auth.uid();
+  ELSE
+    -- Primer voto: insertar
+    INSERT INTO public.votes (user_id, theme_id)
+    VALUES (auth.uid(), p_theme_id);
+  END IF;
+
+  -- Incrementar likes del nuevo theme
   UPDATE public.themes
   SET likes = likes + 1
   WHERE id = p_theme_id;

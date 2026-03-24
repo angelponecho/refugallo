@@ -8,6 +8,6 @@ export default defineNuxtRouteMiddleware(async () => {
   const { data: isAdmin, error } = await supabase.rpc('is_admin')
 
   if (error || !isAdmin) {
-    return navigateTo('/')
+    return navigateTo('/admin/usuario')
   }
 })
