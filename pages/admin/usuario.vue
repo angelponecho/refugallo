@@ -17,6 +17,7 @@
           required
         />
         <AppInput
+          v-if="isAdmin"
           v-model="form.photo"
           label="URL de foto (opcional)"
           placeholder="https://..."
@@ -24,7 +25,7 @@
         />
 
         <!-- Rol: solo lectura, no editable -->
-        <div class="flex flex-col gap-1.5">
+        <div v-if="isAdmin" class="flex flex-col gap-1.5">
           <span class="text-sm font-medium text-text-muted">Rol</span>
           <div class="flex items-center gap-2 px-4 py-3 bg-bg-primary border border-border-dark rounded-lg">
             <span class="px-2 py-0.5 rounded text-xs font-medium bg-bg-elevated text-text-muted">
@@ -100,9 +101,13 @@ definePageMeta({ layout: 'admin', middleware: 'auth' })
 useHead({ title: 'Mi perfil — Refugallo' })
 
 const supabase = useSupabaseClient<Database>()
-const user = useSupabaseUser()
 const { profile, fetchProfile, isAdmin } = useAuth()
 const toast = useToastStore()
+
+async function getAuthHeaders() {
+  const { data: { session } } = await supabase.auth.getSession()
+  return { Authorization: `Bearer ${session?.access_token}` }
+}
 
 // Los admins no usan esta página — tienen /admin
 onMounted(async () => {
@@ -126,13 +131,14 @@ async function handleSave() {
   try {
     await $fetch('/api/profile', {
       method: 'PUT',
-      body: { name: form.name, photo: form.photo || null },
+      headers: await getAuthHeaders(),
+      body: { name: form.name.trim(), photo: form.photo || null },
     })
     await fetchProfile()
     toast.show('Perfil actualizado', 'success')
   }
   catch (e: any) {
-    toast.show(e?.data?.message ?? 'Error al guardar', 'error')
+    toast.show(e?.data?.message ?? e?.message ?? 'Error al guardar', 'error')
   }
   finally {
     saving.value = false
@@ -140,17 +146,21 @@ async function handleSave() {
 }
 
 // Voto actual
+
 const { getCurrentVote } = useVotes()
 const votedTheme = ref<Theme | null>(null)
 
-onMounted(async () => {
-  if (!user.value) return
+async function loadVote() {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) return
   const themeId = await getCurrentVote()
   if (themeId) {
     const { data } = await supabase.from('themes').select('*').eq('id', themeId).single()
     votedTheme.value = data as Theme | null
   }
-})
+}
+
+onMounted(loadVote)
 
 // Eliminar cuenta
 const deleteModalOpen = ref(false)
@@ -159,7 +169,7 @@ const deleting = ref(false)
 async function handleDelete() {
   deleting.value = true
   try {
-    await $fetch('/api/profile', { method: 'DELETE' })
+    await $fetch('/api/profile', { method: 'DELETE', headers: await getAuthHeaders() })
     toast.show('Cuenta eliminada', 'info')
     await navigateTo('/')
   }

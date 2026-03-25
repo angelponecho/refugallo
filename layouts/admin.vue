@@ -10,45 +10,47 @@
       </div>
 
       <nav class="flex-1 p-4 space-y-1">
-        <!-- Navegación para admins -->
-        <template v-if="isAdmin">
-          <NuxtLink
-            to="/admin"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
-            :class="$route.path === '/admin' ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
-          >
-            <LayoutGridIcon class="w-5 h-5" />
-            Dashboard
-          </NuxtLink>
-          <NuxtLink
-            to="/admin/usuarios"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
-            :class="$route.path.startsWith('/admin/usuarios') ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
-          >
-            <UsersIcon class="w-5 h-5" />
-            Usuarios
-          </NuxtLink>
-          <NuxtLink
-            to="/admin/themes"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
-            :class="$route.path.startsWith('/admin/themes') ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
-          >
-            <ImageIcon class="w-5 h-5" />
-            Themes
-          </NuxtLink>
-        </template>
+        <ClientOnly>
+          <!-- Navegación para admins -->
+          <template v-if="isAdmin">
+            <NuxtLink
+              to="/admin"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path === '/admin' ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <LayoutGridIcon class="w-5 h-5" />
+              Dashboard
+            </NuxtLink>
+            <NuxtLink
+              to="/admin/usuarios"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path.startsWith('/admin/usuarios') ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <UsersIcon class="w-5 h-5" />
+              Usuarios
+            </NuxtLink>
+            <NuxtLink
+              to="/admin/themes"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path.startsWith('/admin/themes') ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <ImageIcon class="w-5 h-5" />
+              Themes
+            </NuxtLink>
+          </template>
 
-        <!-- Navegación para usuarios normales -->
-        <template v-else>
-          <NuxtLink
-            to="/admin/usuario"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
-            :class="$route.path === '/admin/usuario' ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
-          >
-            <UserIcon class="w-5 h-5" />
-            Mi perfil
-          </NuxtLink>
-        </template>
+          <!-- Navegación para usuarios normales -->
+          <template v-else>
+            <NuxtLink
+              to="/admin/usuario"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path === '/admin/usuario' ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <UserIcon class="w-5 h-5" />
+              Mi perfil
+            </NuxtLink>
+          </template>
+        </ClientOnly>
       </nav>
 
       <div class="p-4 border-t border-border-dark">
@@ -87,7 +89,9 @@
 import { UsersIcon, LayoutGridIcon, LogOutIcon, ImageIcon, UserIcon } from 'lucide-vue-next'
 
 const route = useRoute()
-const { profile, logout, isAdmin } = useAuth()
+const { profile, logout, isAdmin, fetchProfile } = useAuth()
+
+onMounted(fetchProfile)
 
 const adminName = computed(() => profile.value?.name ?? 'Admin')
 const adminInitial = computed(() => adminName.value.charAt(0).toUpperCase())

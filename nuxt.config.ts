@@ -40,6 +40,10 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
   },
 
+  routeRules: {
+    '/admin/**': { ssr: false },
+  },
+
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
