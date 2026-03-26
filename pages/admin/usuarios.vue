@@ -146,12 +146,10 @@ async function handleSave() {
   saving.value = true
   try {
     if (editingUser.value) {
-      // Actualizar nombre y rol en profiles
-      const { error } = await supabase
-        .from('profiles')
-        .update({ name: form.name, role: form.role })
-        .eq('id', editingUser.value.id)
-      if (error) throw error
+      await $fetch(`/api/admin/users/${editingUser.value.id}`, {
+        method: 'PUT',
+        body: { name: form.name, role: form.role },
+      })
       toast.show('Usuario actualizado', 'success')
     } else {
       // Crear usuario via API del servidor (usa service role key)

@@ -92,7 +92,8 @@ Cada usuario puede cambiar su voto cuando quiera. Cada vez que vota se elimina s
 
 - Logo a la izquierda
 - Menú centrado con las secciones: **Ranking | Quiénes somos | Galería | Contacto**
-- A la derecha: si no hay sesión iniciada → botón **"Iniciar sesión"**; si hay sesión → nombre del usuario con opción de cerrar sesión
+- A la derecha: si no hay sesión iniciada → botón **"Iniciar sesión"**; - Si hay sesión → nombre del usuario con opción de cerrar sesión
+y en ese nombre al pulsar sobre el que tenga un enlace hacia /admin (en caso de que sea administrador) y admin/usuario en  caso de que sea user
 
 ---
 
@@ -143,7 +144,7 @@ Solo se muestran los themes con `visible: true`, ordenados por el campo `order`.
 
 ### RANKING (`/ranking`)
 
-- Hero con titular dinámico: *"[Título del theme más votado] es el #1"*
+- Hero con titular dinámico: *"[Título del theme más votado] es el #1"* e imagen de fondo (~400px de altura)
 - Subtítulo animando a registrarse y votar
 - Botón **"Ver themes"** → `/`
 - Lista ordenada de todos los themes de mayor a menor `likes`, mostrando: posición, imagen `thumbImg`, título, número de votos
@@ -152,7 +153,7 @@ Solo se muestran los themes con `visible: true`, ordenados por el campo `order`.
 
 ### QUIÉNES SOMOS (`/quienes-somos`)
 
-- Bloque con imagen de fondo (~400px de altura)
+- Hero con titular dinámico: *"[Título del theme más votado] es el #1"* e imagen de fondo (~400px de altura)
 - Logo centrado
 - Titular centrado
 - Texto explicativo debajo
@@ -160,7 +161,7 @@ Solo se muestran los themes con `visible: true`, ordenados por el campo `order`.
 ---
 
 ### GALERÍA (`/galeria`)
-
+- Hero con titular dinámico: *"[Título del theme más votado] es el #1"* e imagen de fondo (~400px de altura)
 - Grid tipo **masonry de 3 columnas** con thumbnails de fotos y vídeos
 - Al hacer clic en un thumbnail → lightbox/popup con fondo oscurecido mostrando la imagen/vídeo ampliado
 - Sección inferior:
@@ -334,4 +335,6 @@ Secundario: bg-transparent  border border-white  text-white  hover:bg-white  hov
 - Protección de rutas privadas con middleware
 - Las votaciones solo pueden realizarlas usuarios con sesión iniciada
 - Cada usuario solo puede tener **un voto activo** (cambiable, no múltiple)
+- Si el usuario ya votó y está registrado en el theme votado debera aparecer un texto de "Tu elección" en lugar del boton
+- Si el usuario no esta registrado el botón de votar debe redirigir a la pagina de registro
 - Seed de datos de ejemplo en Supabase para poder probar la aplicación desde el primer arranque

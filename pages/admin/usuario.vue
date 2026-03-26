@@ -17,25 +17,57 @@
           required
         />
         <AppInput
-          v-if="isAdmin"
+          v-model="form.email"
+          label="Email"
+          type="email"
+          placeholder="tu@email.com"
+          required
+        />
+        <AppInput
           v-model="form.photo"
           label="URL de foto (opcional)"
           placeholder="https://..."
           type="url"
         />
 
-        <!-- Rol: solo lectura, no editable -->
-        <div v-if="isAdmin" class="flex flex-col gap-1.5">
+        <!-- Rol: solo lectura -->
+        <div class="flex flex-col gap-1.5">
           <span class="text-sm font-medium text-text-muted">Rol</span>
           <div class="flex items-center gap-2 px-4 py-3 bg-bg-primary border border-border-dark rounded-lg">
-            <span class="px-2 py-0.5 rounded text-xs font-medium bg-bg-elevated text-text-muted">
-              usuario
+            <span
+              class="px-2 py-0.5 rounded text-xs font-medium"
+              :class="profile?.role === 'admin' ? 'bg-brand/20 text-brand' : 'bg-bg-elevated text-text-muted'"
+            >
+              {{ profile?.role ?? 'usuario' }}
             </span>
-            <span class="text-text-muted text-xs">El rol no puede modificarse</span>
+            <span class="text-text-muted text-xs">El rol solo puede modificarlo un administrador</span>
           </div>
         </div>
 
         <AppButton type="submit" :loading="saving">Guardar cambios</AppButton>
+      </form>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div class="bg-bg-elevated border border-border-dark rounded-xl p-6 flex flex-col gap-5">
+      <h2 class="text-lg font-semibold text-white">Cambiar contraseña</h2>
+
+      <form class="flex flex-col gap-4" @submit.prevent="handlePasswordChange">
+        <AppInput
+          v-model="pwForm.newPw"
+          label="Nueva contraseña"
+          type="password"
+          placeholder="Mínimo 6 caracteres"
+          required
+        />
+        <AppInput
+          v-model="pwForm.confirm"
+          label="Confirmar contraseña"
+          type="password"
+          placeholder="Repite la nueva contraseña"
+          required
+        />
+        <AppButton type="submit" :loading="savingPw">Cambiar contraseña</AppButton>
       </form>
     </div>
 
@@ -101,7 +133,7 @@ definePageMeta({ layout: 'admin', middleware: 'auth' })
 useHead({ title: 'Mi perfil — Refugallo' })
 
 const supabase = useSupabaseClient<Database>()
-const { profile, fetchProfile, isAdmin } = useAuth()
+const { user, profile, fetchProfile } = useAuth()
 const toast = useToastStore()
 
 async function getAuthHeaders() {
@@ -109,19 +141,19 @@ async function getAuthHeaders() {
   return { Authorization: `Bearer ${session?.access_token}` }
 }
 
-// Los admins no usan esta página — tienen /admin
-onMounted(async () => {
-  await fetchProfile()
-  if (isAdmin.value) await navigateTo('/admin')
-})
+// Cargar perfil en cuanto el usuario de auth esté disponible
+watch(user, async (u) => {
+  if (u) await fetchProfile()
+}, { immediate: true })
 
-// Formulario
-const form = reactive({ name: '', photo: '' })
+// Formulario de datos personales
+const form = reactive({ name: '', email: '', photo: '' })
 const saving = ref(false)
 
 watch(profile, (p) => {
   if (p) {
     form.name = p.name ?? ''
+    form.email = p.email ?? user.value?.email ?? ''
     form.photo = p.photo ?? ''
   }
 }, { immediate: true })
@@ -132,8 +164,14 @@ async function handleSave() {
     await $fetch('/api/profile', {
       method: 'PUT',
       headers: await getAuthHeaders(),
-      body: { name: form.name.trim(), photo: form.photo || null },
+      body: { name: form.name.trim(), photo: form.photo || null, email: form.email.trim() },
     })
+    // Actualizar también el email en auth si cambió
+    if (form.email.trim() !== user.value?.email) {
+      const { error } = await supabase.auth.updateUser({ email: form.email.trim() })
+      if (error) throw error
+      toast.show('Revisa tu correo para confirmar el cambio de email', 'info')
+    }
     await fetchProfile()
     toast.show('Perfil actualizado', 'success')
   }
@@ -145,8 +183,35 @@ async function handleSave() {
   }
 }
 
-// Voto actual
+// Formulario de cambio de contraseña
+const pwForm = reactive({ newPw: '', confirm: '' })
+const savingPw = ref(false)
 
+async function handlePasswordChange() {
+  if (pwForm.newPw.length < 6) {
+    toast.show('La contraseña debe tener al menos 6 caracteres', 'error')
+    return
+  }
+  if (pwForm.newPw !== pwForm.confirm) {
+    toast.show('Las contraseñas no coinciden', 'error')
+    return
+  }
+  savingPw.value = true
+  try {
+    const { error } = await supabase.auth.updateUser({ password: pwForm.newPw })
+    if (error) throw error
+    Object.assign(pwForm, { newPw: '', confirm: '' })
+    toast.show('Contraseña actualizada', 'success')
+  }
+  catch (e: any) {
+    toast.show(e?.message ?? 'Error al cambiar la contraseña', 'error')
+  }
+  finally {
+    savingPw.value = false
+  }
+}
+
+// Voto actual
 const { getCurrentVote } = useVotes()
 const votedTheme = ref<Theme | null>(null)
 

@@ -11,7 +11,7 @@ export const useVotes = () => {
       return false
     }
 
-    const { error } = await supabase.rpc('vote_theme', { p_theme_id: themeId })
+    const { error } = await (supabase as any).rpc('vote_theme', { p_theme_id: themeId })
 
     if (error) {
       toast.show('Error al registrar el voto', 'error')
@@ -24,7 +24,7 @@ export const useVotes = () => {
 
   // Devuelve el theme_id por el que el usuario ha votado, o null si no ha votado
   async function getCurrentVote(): Promise<number | null> {
-    if (!user.value) return null
+    if (!user.value?.id) return null
     const { data } = await supabase
       .from('votes')
       .select('theme_id')

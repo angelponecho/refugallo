@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   if (!userId) throw createError({ statusCode: 401, message: 'No autenticado' })
 
   const body = await readBody(event)
-  const { name, photo } = body
+  const { name, photo, email } = body
 
   if (!name?.trim()) {
     throw createError({ statusCode: 400, message: 'El nombre es obligatorio' })
@@ -27,9 +27,9 @@ export default defineEventHandler(async (event) => {
   const admin = serverSupabaseServiceRole(event) as any
   const { data, error } = await admin
     .from('profiles')
-    .update({ name: name.trim(), photo: photo ?? null })
+    .update({ name: name.trim(), photo: photo ?? null, ...(email ? { email: email.trim() } : {}) })
     .eq('id', userId)
-    .select('id, name, photo, role, created_at')
+    .select('id, name, email, photo, role, created_at')
     .single()
 
   if (error) throw createError({ statusCode: 400, message: error.message })

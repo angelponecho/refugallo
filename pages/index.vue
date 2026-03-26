@@ -36,11 +36,15 @@
                   </h1>
                   <p class="text-text-muted text-lg mt-3">{{ theme.subtitle }}</p>
                 </div>
-                <div class="flex gap-3 flex-wrap">
+                <div class="flex gap-3 flex-wrap items-center">
                   <NuxtLink :to="`/theme/${theme.id}`">
                     <AppButton size="lg">Ver</AppButton>
                   </NuxtLink>
+                  <span v-if="userVoteId === theme.id" class="text-brand font-semibold text-lg">
+                    Tu elección
+                  </span>
                   <AppButton
+                    v-else
                     size="lg"
                     variant="secondary"
                     :loading="votingId === theme.id"
@@ -129,19 +133,19 @@ import type { Theme } from '~/types'
 useHead({ title: 'Refugallo — Vota por tu theme favorito' })
 
 const { getThemes } = useThemes()
-const { vote } = useVotes()
-const toast = useToastStore()
+const { vote, getCurrentVote } = useVotes()
 
 const themes = ref<Theme[]>([])
 const heroEl = ref<HTMLElement | null>(null)
 const thumbsEl = ref<HTMLElement | null>(null)
 const votingId = ref<number | null>(null)
+const userVoteId = ref<number | null>(null)
 
 let heroSwiper: Swiper | null = null
 let thumbsSwiper: Swiper | null = null
 
 onMounted(async () => {
-  themes.value = await getThemes()
+  ;[themes.value, userVoteId.value] = await Promise.all([getThemes(), getCurrentVote()])
 
   await nextTick()
 
@@ -180,6 +184,7 @@ async function handleVote(themeId: number) {
   if (success) {
     const t = themes.value.find(t => t.id === themeId)
     if (t) t.likes++
+    userVoteId.value = themeId
   }
   votingId.value = null
 }
