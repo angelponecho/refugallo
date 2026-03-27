@@ -74,29 +74,49 @@
         >
           THEMES
         </h2>
-        <div ref="thumbsEl" class="swiper">
-          <div class="swiper-wrapper">
-            <div
-              v-for="(theme, index) in themes"
-              :key="theme.id"
-              class="swiper-slide !w-40 md:!w-48 cursor-pointer"
-              @click="slideTo(index)"
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <button
+              class="thumbs-button-prev shrink-0 w-9 h-9 rounded-full bg-bg-elevated border border-border-dark hover:border-brand hover:text-brand text-text-muted transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Theme anterior"
             >
-              <div class="group relative aspect-[2/3] rounded-lg overflow-hidden border border-border-dark hover:border-brand transition-all duration-300">
-                <img
-                  :src="theme.thumbImg ?? `https://picsum.photos/seed/${theme.id}thumb/400/600`"
-                  :alt="theme.title"
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                  width="400"
-                  height="600"
-                />
-                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                  <p class="text-white text-xs font-semibold line-clamp-2">{{ theme.title }}</p>
+              <ChevronLeftIcon class="w-5 h-5" />
+            </button>
+
+            <div ref="thumbsEl" class="swiper flex-1 min-w-0">
+              <div class="swiper-wrapper">
+                <div
+                  v-for="(theme, index) in themes"
+                  :key="theme.id"
+                  class="swiper-slide !w-40 md:!w-48 cursor-pointer"
+                  @click="slideTo(index)"
+                >
+                  <div class="group relative aspect-[2/3] rounded-lg overflow-hidden border border-border-dark hover:border-brand transition-all duration-300">
+                    <img
+                      :src="theme.thumbImg ?? `https://picsum.photos/seed/${theme.id}thumb/400/600`"
+                      :alt="theme.title"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      width="400"
+                      height="600"
+                    />
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                      <p class="text-white text-xs font-semibold line-clamp-2">{{ theme.title }}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <button
+              class="thumbs-button-next shrink-0 w-9 h-9 rounded-full bg-bg-elevated border border-border-dark hover:border-brand hover:text-brand text-text-muted transition-all duration-200 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Theme siguiente"
+            >
+              <ChevronRightIcon class="w-5 h-5" />
+            </button>
           </div>
+
+          <div class="thumbs-pagination swiper-pagination !static" />
         </div>
       </div>
     </section>
@@ -128,6 +148,7 @@ import { Navigation, Pagination, Thumbs, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next'
 import type { Theme } from '~/types'
 
 useHead({ title: 'Refugallo — Vota por tu theme favorito' })
@@ -150,11 +171,13 @@ onMounted(async () => {
   await nextTick()
 
   thumbsSwiper = new Swiper(thumbsEl.value!, {
-    modules: [],
+    modules: [Navigation, Pagination],
     slidesPerView: 'auto',
     spaceBetween: 12,
     freeMode: true,
     watchSlidesProgress: true,
+    navigation: { prevEl: '.thumbs-button-prev', nextEl: '.thumbs-button-next' },
+    pagination: { el: '.thumbs-pagination', clickable: true },
   })
 
   heroSwiper = new Swiper(heroEl.value!, {

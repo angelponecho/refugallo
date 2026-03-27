@@ -7,7 +7,7 @@ export const useAuth = () => {
   const profile = useState<Profile | null>('profile', () => null)
 
   const isLoggedIn = computed(() => !!user.value)
-  const isAdmin = computed(() => profile.value?.role === 'admin')
+  const isAdmin = computed(() => user.value?.app_metadata?.role === 'admin')
 
   async function fetchProfile() {
     if (!user.value?.id) {

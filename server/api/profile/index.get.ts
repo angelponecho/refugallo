@@ -18,12 +18,13 @@ export default defineEventHandler(async (event) => {
   if (!userId) throw createError({ statusCode: 401, message: 'No autenticado' })
 
   const admin = serverSupabaseServiceRole(event) as any
-  const { data, error } = await admin
-    .from('profiles')
-    .select('id, name, email, photo, role, created_at')
-    .eq('id', userId)
-    .single()
-
+  const { data, error } = await admin.auth.admin.getUserById(userId)
   if (error) throw createError({ statusCode: 400, message: error.message })
-  return data
+
+  return {
+    id: data.user.id as string,
+    name: (data.user.user_metadata?.name ?? null) as string | null,
+    email: (data.user.email ?? null) as string | null,
+    role: (data.user.app_metadata?.role ?? 'user') as 'user' | 'admin',
+  }
 })

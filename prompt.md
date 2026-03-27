@@ -119,6 +119,7 @@ Solo se muestran los themes con `visible: true`, ordenados por el campo `order`.
 
 - Pequeño titular: *"Themes"*
 - Slider horizontal con las imágenes `thumbImg` en formato vertical
+- Navegación con flechas laterales y bullets
 - Al hacer clic en un thumb → el hero slider salta al slide del theme correspondiente
 
 **Sección 3 — CTA Registro**

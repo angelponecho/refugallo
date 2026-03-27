@@ -23,26 +23,6 @@
           placeholder="tu@email.com"
           required
         />
-        <AppInput
-          v-model="form.photo"
-          label="URL de foto (opcional)"
-          placeholder="https://..."
-          type="url"
-        />
-
-        <!-- Rol: solo lectura -->
-        <div class="flex flex-col gap-1.5">
-          <span class="text-sm font-medium text-text-muted">Rol</span>
-          <div class="flex items-center gap-2 px-4 py-3 bg-bg-primary border border-border-dark rounded-lg">
-            <span
-              class="px-2 py-0.5 rounded text-xs font-medium"
-              :class="profile?.role === 'admin' ? 'bg-brand/20 text-brand' : 'bg-bg-elevated text-text-muted'"
-            >
-              {{ profile?.role ?? 'usuario' }}
-            </span>
-            <span class="text-text-muted text-xs">El rol solo puede modificarlo un administrador</span>
-          </div>
-        </div>
 
         <AppButton type="submit" :loading="saving">Guardar cambios</AppButton>
       </form>
@@ -141,39 +121,46 @@ async function getAuthHeaders() {
   return { Authorization: `Bearer ${session?.access_token}` }
 }
 
-// Cargar perfil en cuanto el usuario de auth esté disponible
-watch(user, async (u) => {
-  if (u) await fetchProfile()
-}, { immediate: true })
-
 // Formulario de datos personales
-const form = reactive({ name: '', email: '', photo: '' })
+const form = reactive({ name: '', email: '' })
 const saving = ref(false)
 
-watch(profile, (p) => {
-  if (p) {
-    form.name = p.name ?? ''
-    form.email = p.email ?? user.value?.email ?? ''
-    form.photo = p.photo ?? ''
+// Poblar el formulario desde el JWT (disponible inmediatamente)
+watch(user, (u) => {
+  if (u) {
+    form.name = u.user_metadata?.name ?? form.name
+    form.email = u.email ?? form.email
   }
 }, { immediate: true })
+
+// Refinar con los datos del perfil cuando estén disponibles
+watch(profile, (p) => {
+  if (p) {
+    form.name = p.name ?? form.name
+    form.email = p.email ?? form.email
+  }
+}, { immediate: true })
+
+// Cargar perfil completo al montar
+onMounted(async () => {
+  if (user.value) await fetchProfile()
+})
 
 async function handleSave() {
   saving.value = true
   try {
-    await $fetch('/api/profile', {
+    const updated = await $fetch('/api/profile', {
       method: 'PUT',
       headers: await getAuthHeaders(),
-      body: { name: form.name.trim(), photo: form.photo || null, email: form.email.trim() },
+      body: { name: form.name.trim(), email: form.email.trim() },
     })
-    // Actualizar también el email en auth si cambió
-    if (form.email.trim() !== user.value?.email) {
-      const { error } = await supabase.auth.updateUser({ email: form.email.trim() })
-      if (error) throw error
+    await fetchProfile()
+    if ((updated as any).email !== user.value?.email) {
       toast.show('Revisa tu correo para confirmar el cambio de email', 'info')
     }
-    await fetchProfile()
-    toast.show('Perfil actualizado', 'success')
+    else {
+      toast.show('Perfil actualizado', 'success')
+    }
   }
   catch (e: any) {
     toast.show(e?.data?.message ?? e?.message ?? 'Error al guardar', 'error')
@@ -216,8 +203,6 @@ const { getCurrentVote } = useVotes()
 const votedTheme = ref<Theme | null>(null)
 
 async function loadVote() {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) return
   const themeId = await getCurrentVote()
   if (themeId) {
     const { data } = await supabase.from('themes').select('*').eq('id', themeId).single()
@@ -225,7 +210,7 @@ async function loadVote() {
   }
 }
 
-onMounted(loadVote)
+watch(user, (u) => { if (u) loadVote() }, { immediate: true })
 
 // Eliminar cuenta
 const deleteModalOpen = ref(false)
