@@ -261,7 +261,10 @@ Ruta privada protegida por middleware de autenticación. Si el usuario no está 
 - Puede ver qué theme votó
 - No puede cambiar de rol. Solo puede ser user
 
+#### `/admin/voto`
+muestra tu theme votado y te permite cambiarlo
 ---
+
 
 ## DISEÑO Y ESTILOS
 

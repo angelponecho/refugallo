@@ -55,20 +55,20 @@
     <div class="bg-bg-elevated border border-border-dark rounded-xl p-6 flex flex-col gap-4">
       <h2 class="text-lg font-semibold text-white">Tu voto</h2>
 
-      <div v-if="votedTheme" class="flex items-center gap-4">
+      <div v-if="votedTheme" class="flex items-center gap-3">
         <img
           v-if="votedTheme.thumbImg"
           :src="votedTheme.thumbImg"
           :alt="votedTheme.title"
-          class="w-16 h-16 rounded-lg object-cover"
+          class="w-12 h-12 rounded-lg object-cover shrink-0"
         />
-        <div>
-          <p class="text-white font-semibold">{{ votedTheme.title }}</p>
+        <div class="min-w-0">
+          <p class="text-white font-semibold truncate">{{ votedTheme.title }}</p>
           <p class="text-text-muted text-sm">{{ votedTheme.likes }} votos</p>
         </div>
         <NuxtLink
           :to="`/theme/${votedTheme.id}`"
-          class="ml-auto text-brand text-sm hover:underline"
+          class="ml-auto text-brand text-sm hover:underline shrink-0"
         >
           Ver theme
         </NuxtLink>
@@ -78,6 +78,27 @@
         Aún no has votado por ningún theme.
         <NuxtLink to="/" class="text-brand hover:underline">Ver themes</NuxtLink>
       </p>
+
+      <div class="flex flex-col gap-3 pt-2 border-t border-border-dark">
+        <label class="text-sm font-medium text-text-muted" for="vote-select">
+          {{ votedTheme ? 'Cambiar voto' : 'Votar por un theme' }}
+        </label>
+        <select
+          id="vote-select"
+          v-model="selectedThemeId"
+          class="bg-bg-primary border border-border-dark rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-brand"
+        >
+          <option :value="null" disabled>Selecciona un theme...</option>
+          <option v-for="t in allThemes" :key="t.id" :value="t.id">{{ t.title }}</option>
+        </select>
+        <AppButton
+          :loading="savingVote"
+          :disabled="!selectedThemeId || selectedThemeId === votedTheme?.id"
+          @click="handleVoteChange"
+        >
+          Guardar voto
+        </AppButton>
+      </div>
     </div>
 
     <!-- Zona de peligro -->
@@ -144,6 +165,7 @@ watch(profile, (p) => {
 // Cargar perfil completo al montar
 onMounted(async () => {
   if (user.value) await fetchProfile()
+  allThemes.value = await getThemes()
 })
 
 async function handleSave() {
@@ -199,14 +221,35 @@ async function handlePasswordChange() {
 }
 
 // Voto actual
-const { getCurrentVote } = useVotes()
+const { getCurrentVote, vote } = useVotes()
+const { getThemes } = useThemes()
 const votedTheme = ref<Theme | null>(null)
+const allThemes = ref<Theme[]>([])
+const selectedThemeId = ref<number | null>(null)
+const savingVote = ref(false)
 
 async function loadVote() {
   const themeId = await getCurrentVote()
   if (themeId) {
     const { data } = await supabase.from('themes').select('*').eq('id', themeId).single()
     votedTheme.value = data as Theme | null
+    selectedThemeId.value = themeId
+  }
+  else {
+    votedTheme.value = null
+    selectedThemeId.value = null
+  }
+}
+
+async function handleVoteChange() {
+  if (!selectedThemeId.value) return
+  savingVote.value = true
+  try {
+    const ok = await vote(selectedThemeId.value)
+    if (ok) await loadVote()
+  }
+  finally {
+    savingVote.value = false
   }
 }
 
