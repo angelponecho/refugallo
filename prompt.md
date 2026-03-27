@@ -245,6 +245,10 @@ Ruta privada protegida por middleware de autenticación. Si el usuario no está 
 - Campos editables: todos los de la tabla `themes` incluyendo `visible` y `order`
 - Botón **"Añadir theme"**
 
+#### 'votos'
+- Lista paginada de votos con nombre de usuario y theme votado 
+- Acciones por fila: **Ver | Editar | Eliminar**
+
 ---
 
 ### Si el usuario tiene `role: user`
@@ -334,7 +338,7 @@ Secundario: bg-transparent  border border-white  text-white  hover:bg-white  hov
 - Diseño **responsive** (mobile-first)
 - Animaciones suaves en transiciones de página y sliders
 - Protección de rutas privadas con middleware
-- Las votaciones solo pueden realizarlas usuarios con sesión iniciada
+- Las votaciones solo pueden d usuarios con sesión iniciada
 - Cada usuario solo puede tener **un voto activo** (cambiable, no múltiple)
 - Si el usuario ya votó y está registrado en el theme votado debera aparecer un texto de "Tu elección" en lugar del boton
 - Si el usuario no esta registrado el botón de votar debe redirigir a la pagina de registro

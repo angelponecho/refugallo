@@ -37,6 +37,14 @@
               <ImageIcon class="w-5 h-5" />
               Themes
             </NuxtLink>
+            <NuxtLink
+              to="/admin/votaciones"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path.startsWith('/admin/votaciones') ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <BarChart2Icon class="w-5 h-5" />
+              Votaciones
+            </NuxtLink>
           </template>
 
           <!-- Navegación para usuarios normales -->
@@ -86,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { UsersIcon, LayoutGridIcon, LogOutIcon, ImageIcon, UserIcon } from 'lucide-vue-next'
+import { UsersIcon, LayoutGridIcon, LogOutIcon, ImageIcon, UserIcon, BarChart2Icon } from 'lucide-vue-next'
 
 const route = useRoute()
 const { profile, logout, isAdmin, fetchProfile } = useAuth()
@@ -100,6 +108,7 @@ const pageTitles: Record<string, string> = {
   '/admin': 'Dashboard',
   '/admin/usuarios': 'Gestión de Usuarios',
   '/admin/themes': 'Gestión de Themes',
+  '/admin/votaciones': 'Gestión de Votaciones',
   '/admin/usuario': 'Mi Perfil',
 }
 const pageTitle = computed(() => pageTitles[route.path] ?? 'Admin')
