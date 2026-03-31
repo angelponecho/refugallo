@@ -57,6 +57,14 @@
               <UserIcon class="w-5 h-5" />
               Mi perfil
             </NuxtLink>
+            <NuxtLink
+              to="/admin/usuario/voto"
+              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors hover:bg-bg-elevated"
+              :class="$route.path === '/admin/usuario/voto' ? 'bg-bg-elevated text-brand' : 'text-text-muted'"
+            >
+              <BarChart2Icon class="w-5 h-5" />
+              Mi voto
+            </NuxtLink>
           </template>
         </ClientOnly>
       </nav>
@@ -110,6 +118,7 @@ const pageTitles: Record<string, string> = {
   '/admin/themes': 'Gestión de Themes',
   '/admin/votaciones': 'Gestión de Votaciones',
   '/admin/usuario': 'Mi Perfil',
+  '/admin/usuario/voto': 'Mi Voto',
 }
 const pageTitle = computed(() => pageTitles[route.path] ?? 'Admin')
 

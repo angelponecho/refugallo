@@ -261,8 +261,14 @@ Ruta privada protegida por middleware de autenticación. Si el usuario no está 
 - Puede ver qué theme votó
 - No puede cambiar de rol. Solo puede ser user
 
-#### `/admin/voto`
-muestra tu theme votado y te permite cambiarlo
+#### Sección "Tu voto" dentro de `/admin/usuario`
+
+- Muestra el theme votado actualmente: imagen thumb, título, número de likes y enlace "Ver theme"
+- Si no ha votado, muestra un mensaje con enlace a la página principal
+- Dropdown con todos los themes disponibles, preseleccionado en el voto actual
+- Botón "Guardar voto" — deshabilitado si no hay selección o si se elige el mismo theme ya votado
+- Al guardar se llama al RPC `vote_theme` (UPSERT): descuenta likes al theme anterior y los suma al nuevo
+- La sección se actualiza automáticamente tras guardar sin recargar la página
 ---
 
 

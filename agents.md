@@ -4,7 +4,7 @@ Este archivo define la arquitectura de agentes para construir el proyecto descri
 Cada agente tiene un rol único, herramientas asignadas, entradas esperadas y salidas concretas.
 Los agentes se orquestan de forma secuencial o paralela según sus dependencias.
 
-> **Estado del proyecto:** 2026-03-24
+> **Estado del proyecto:** 2026-03-30
 > Leyenda de estado: ✅ Completado · 🔄 Parcialmente implementado · ⏳ Pendiente
 
 ---
@@ -30,7 +30,7 @@ Los agentes se orquestan de forma secuencial o paralela según sus dependencias.
           ┌──────────────────────┼──────────────────────┐
           │                      │                      │
    ┌──────▼──────┐       ┌───────▼──────┐      ┌───────▼──────┐
-   │   AGENT 4   │  ✅   │   AGENT 5    │  🔄  │   AGENT 6    │  🔄
+   │   AGENT 4   │  ✅   │   AGENT 5    │  ✅  │   AGENT 6    │  🔄
    │  UI / Pages │       │   Voting     │      │    Admin     │
    │  Frontend   │       │   Logic      │      │    Panel     │
    └──────┬──────┘       └───────┬──────┘      └───────┬──────┘
@@ -107,42 +107,44 @@ npm install swiper lucide-vue-next vue3-masonry-css
 
 **Decisión tecnológica:** **Supabase (PostgreSQL)** — elegido por su integración nativa con Nuxt (`@nuxtjs/supabase`), autenticación incluida y Row Level Security.
 
-**Lo que está hecho:**
-- `supabase/schema.sql` — esquema completo (themes, profiles, votes) con RLS ✅
-- `supabase/seed.sql` — datos de ejemplo ✅
-- `server/api/admin/users/index.post.ts` — crear usuario (solo admin) ✅
-- `server/api/admin/users/[id].delete.ts` — eliminar usuario (solo admin) ✅
+**Decisión arquitectónica importante:**
+- La tabla `profiles` fue **eliminada**. Los datos del usuario (nombre, email, rol) se gestionan directamente sobre `auth.users` vía Admin API de Supabase.
+- El rol (`user` / `admin`) se almacena en `raw_app_meta_data` (no editable por el usuario, accesible en el JWT).
+- La función `is_admin()` lee de `auth.jwt() -> 'app_metadata' ->> 'role'`.
+- Los endpoints de perfil usan Bearer token: el cliente pasa `Authorization: Bearer <access_token>` y el servidor extrae el `userId` del JWT.
 
-**Endpoints pendientes de crear:**
+**Endpoints completados:**
 
-| Método | Ruta                              | Descripción                                    | Estado |
-|--------|-----------------------------------|------------------------------------------------|--------|
-| GET    | `/api/themes/index.get.ts`        | Lista themes visibles ordenados por order      | ⏳     |
-| GET    | `/api/themes/[id].get.ts`         | Detalle de un theme                            | ⏳     |
-| POST   | `/api/themes/index.post.ts`       | Crear theme (solo admin)                       | ⏳     |
-| PUT    | `/api/themes/[id].put.ts`         | Editar theme (solo admin)                      | ⏳     |
-| DELETE | `/api/themes/[id].delete.ts`      | Eliminar theme (solo admin)                    | ⏳     |
-| GET    | `/api/ranking/index.get.ts`       | Themes ordenados por likes desc                | ⏳     |
-| POST   | `/api/vote/[themeId].post.ts`     | Votar por un theme (UPSERT, requiere sesión)   | ⏳     |
-| DELETE | `/api/vote/index.delete.ts`       | Eliminar voto del usuario (al borrar cuenta)   | ⏳     |
-| GET    | `/api/admin/users/index.get.ts`   | Lista usuarios paginada (solo admin)           | ⏳     |
-| PUT    | `/api/admin/users/[id].put.ts`    | Editar usuario (solo admin)                    | ⏳     |
-| GET    | `/api/profile/index.get.ts`       | Ver datos propios (role: user)                 | ⏳     |
-| PUT    | `/api/profile/index.put.ts`       | Editar datos propios (role: user)              | ⏳     |
-| DELETE | `/api/profile/index.delete.ts`    | Borrar propia cuenta (elimina voto)            | ⏳     |
+| Método | Ruta                                   | Descripción                                | Estado |
+|--------|----------------------------------------|--------------------------------------------|--------|
+| GET    | `/api/profile`                         | Ver datos propios (bearer token)           | ✅     |
+| PUT    | `/api/profile`                         | Editar nombre, email propios               | ✅     |
+| DELETE | `/api/profile`                         | Borrar propia cuenta (elimina voto)        | ✅     |
+| GET    | `/api/admin/users`                     | Lista usuarios (solo admin)                | ✅     |
+| POST   | `/api/admin/users`                     | Crear usuario (solo admin)                 | ✅     |
+| PUT    | `/api/admin/users/[id]`                | Editar usuario (solo admin)                | ✅     |
+| DELETE | `/api/admin/users/[id]`                | Eliminar usuario (solo admin)              | ✅     |
+| GET    | `/api/admin/votes`                     | Lista votos con usuario y theme (admin)    | ✅     |
+| PUT    | `/api/admin/votes/[id]`                | Cambiar theme votado, ajusta likes (admin) | ✅     |
+| DELETE | `/api/admin/votes/[id]`                | Eliminar voto, ajusta likes (admin)        | ✅     |
 
-**Lógica del voto (UPSERT):**
-```sql
--- Al votar por themeId nuevo:
--- 1. Obtener voto actual del usuario (si existe) → restar 1 likes al theme anterior
--- 2. UPSERT en votes (user_id unique) con el nuevo theme_id
--- 3. Sumar 1 likes al theme nuevo
-```
+**Endpoints pendientes:**
+
+| Método | Ruta                              | Descripción                               | Estado |
+|--------|-----------------------------------|-------------------------------------------|--------|
+| GET    | `/api/themes`                     | Lista themes visibles ordenados por order | ⏳     |
+| GET    | `/api/themes/[id]`                | Detalle de un theme                       | ⏳     |
+| POST   | `/api/themes`                     | Crear theme (solo admin)                  | ⏳     |
+| PUT    | `/api/themes/[id]`                | Editar theme (solo admin)                 | ⏳     |
+| DELETE | `/api/themes/[id]`                | Eliminar theme (solo admin)               | ⏳     |
+| GET    | `/api/ranking`                    | Themes ordenados por likes desc           | ⏳     |
+
+> **Nota:** La lógica de votación (UPSERT + ajuste de likes) se implementa mediante el RPC `vote_theme` en Supabase, llamado directamente desde `useVotes.ts` con el cliente autenticado. No se necesita endpoint REST propio para votar.
 
 **Notas de implementación:**
 - Usar `serverSupabaseServiceRole(event)` para operaciones admin
-- Usar `serverSupabaseClient(event)` para operaciones de usuario autenticado
-- Validar role en cada endpoint admin comparando `profiles.role`
+- Usar Bearer token + extracción manual de JWT para endpoints de perfil
+- Validar role en cada endpoint admin leyendo `app_metadata.role` del usuario
 
 **Outputs obligatorios:**
 - Todos los endpoints del listado funcionando y devolviendo JSON correcto
@@ -158,16 +160,17 @@ npm install swiper lucide-vue-next vue3-masonry-css
 **Se ejecuta:** En paralelo con AGENT 2, después de AGENT 1.
 
 **Lo que está hecho:**
-- `composables/useAuth.ts` — composable funcional con `user`, `isLoggedIn`, `isAdmin`, `login()`, `logout()`, `register()` ✅
+- `composables/useAuth.ts` — composable funcional con `user`, `profile`, `isLoggedIn`, `isAdmin`, `login()`, `logout()`, `register()`, `fetchProfile()` ✅
 - `middleware/auth.ts` — redirige a `/registro` si no hay sesión ✅
 - `middleware/admin.ts` — redirige a `/` si el usuario no tiene `role: admin` ✅
 - Autenticación gestionada por `@nuxtjs/supabase` (Supabase Auth) ✅
 - Rutas `/admin/*` protegidas ✅
 
 **Notas:**
+- `isAdmin` lee del JWT: `user.value?.app_metadata?.role === 'admin'`
+- `fetchProfile()` llama a `GET /api/profile` con `Authorization: Bearer <token>`
+- El `role` se almacena en `raw_app_meta_data` (solo modificable con service role key)
 - La recuperación de contraseña usa el flujo nativo de Supabase Auth (email con enlace)
-- El `role` se almacena en la tabla `profiles`, no en `auth.users`
-- El composable `useSupabaseUser()` provee el usuario actual
 
 ---
 
@@ -208,13 +211,14 @@ npm install swiper lucide-vue-next vue3-masonry-css
 | `pages/admin/index.vue`               | ✅     |
 | `pages/admin/usuarios.vue`            | ✅     |
 | `pages/admin/themes.vue`              | ✅     |
-| `pages/admin/usuario.vue`             | ⏳ Pendiente (perfil de usuario `role: user`) |
+| `pages/admin/usuario.vue`             | ✅     |
+| `pages/admin/votaciones.vue`          | ✅     |
 
 **Archivos auxiliares creados:**
 - `stores/toast.ts` — store Pinia para notificaciones ✅
-- `types/database.types.ts` — tipos generados desde Supabase ✅
-- `types/index.ts` — tipos globales del proyecto ✅
-- `utils/textChunker.ts` — divide el `text` del theme en bloques de 8 líneas para el slider ✅
+- `types/database.types.ts` — tipos del proyecto (tabla `profiles` eliminada) ✅
+- `types/index.ts` — tipos globales (`Profile` sin `photo` ni `created_at`) ✅
+- `utils/textChunker.ts` — divide el `text` del theme en bloques para el slider ✅
 
 **Reglas de estilo a respetar:**
 - Fondo general `#0A0A0A`, secciones alternas `#141414`
@@ -223,89 +227,81 @@ npm install swiper lucide-vue-next vue3-masonry-css
 - Fuente titulares: Bebas Neue, cuerpo: Inter
 - Animaciones de entrada con `@vueuse/motion` en cada sección
 
-**Pendiente:**
-- Crear `pages/admin/usuario.vue` — perfil del usuario con `role: user` (ver datos, editar, borrar cuenta, ver voto actual)
-
 ---
 
-### AGENT 5 — VOTING LOGIC 🔄 PARCIALMENTE IMPLEMENTADO
+### AGENT 5 — VOTING LOGIC ✅ COMPLETADO
 
-**Rol:** Implementa toda la lógica de votación en frontend y backend, incluyendo validaciones y feedback al usuario.
+**Rol:** Implementa toda la lógica de votación en frontend y backend.
 
 **Se ejecuta:** Después de AGENT 2, AGENT 3 y AGENT 4.
 
 **Lo que está hecho:**
-- `composables/useVotes.ts` — composable de votación ✅
+- `composables/useVotes.ts` — composable de votación conectado a RPC real ✅
+  - `vote(themeId)` — llama al RPC `vote_theme` (UPSERT + ajuste de likes)
+  - `getCurrentVote()` — consulta directa a `votes` filtrando por `user_id`
+  - `hasVoted(themeId)` — comprueba si el voto activo es ese theme
+- Si el usuario ya votó → se muestra "Tu elección" en lugar del botón de votar ✅
+- Si el usuario no tiene sesión → el botón de votar redirige a `/registro` ✅
+- Toast de confirmación al votar ✅
 
-**Pendiente:**
-- Crear endpoint `POST /api/vote/[themeId]` con lógica UPSERT
-- Crear endpoint `DELETE /api/vote` para cuando el usuario elimina su cuenta
-- Conectar `useVotes.ts` al endpoint real (actualmente puede usar datos mock o Supabase directo)
-- Validar que al votar:
-  - Si no hay sesión → mostrar modal/toast invitando a registrarse con link a `/registro`
-  - Si ya votó el mismo theme → mostrar "Ya has votado por este theme"
-  - Si cambia de voto → actualizar likes del theme anterior y nuevo
-- Toast de confirmación con color `#0094C6`
-- Actualización optimista del contador en UI
-
-**Composable `useVotes.ts` debe exponer:**
-```typescript
-const { hasVoted, currentVoteThemeId, voteCount, castVote, removeVote } = useVotes(themeId?)
-```
-
-**Outputs obligatorios:**
-- Composable `useVotes()` conectado a API real
-- Validación de voto único en frontend y backend
-- Feedback visual claro en todos los estados
-- Contador de likes actualizado sin recargar la página
+**Notas de implementación:**
+- El RPC `vote_theme` en Supabase gestiona el UPSERT y el ajuste de `likes` (resta al theme anterior, suma al nuevo)
+- `(supabase as any).rpc(...)` para evitar error TypeScript por tipos no generados del RPC
 
 ---
 
 ### AGENT 6 — ADMIN PANEL 🔄 PARCIALMENTE IMPLEMENTADO
 
-**Rol:** Construye el panel de administración privado para gestionar usuarios y themes.
+**Rol:** Construye el panel de administración privado para gestionar usuarios, themes y votos.
 
 **Se ejecuta:** Después de AGENT 2, AGENT 3 y AGENT 4.
 
 **Lo que está hecho:**
-- `pages/admin/index.vue` ✅
-- `pages/admin/usuarios.vue` ✅
-- `pages/admin/themes.vue` ✅
-- `components/Admin/DataTable.vue` ✅
-- `components/Admin/ModalForm.vue` ✅
-- `server/api/admin/users/index.post.ts` — crear usuario ✅
-- `server/api/admin/users/[id].delete.ts` — eliminar usuario ✅
 
-**Pendiente (endpoints de API):**
-- `GET /api/admin/users` — listar usuarios paginados
-- `PUT /api/admin/users/[id]` — editar usuario
-- Todos los endpoints de `/api/themes/*` (CRUD completo)
-- Página `pages/admin/usuario.vue` — perfil para `role: user`
+| Archivo / Endpoint                            | Estado |
+|-----------------------------------------------|--------|
+| `pages/admin/index.vue`                       | ✅     |
+| `pages/admin/usuarios.vue`                    | ✅     |
+| `pages/admin/themes.vue`                      | ✅     |
+| `pages/admin/usuario.vue`                     | ✅     |
+| `pages/admin/votaciones.vue`                  | ✅     |
+| `layouts/admin.vue` (con nav Votaciones)      | ✅     |
+| `server/api/admin/users/index.get.ts`         | ✅     |
+| `server/api/admin/users/index.post.ts`        | ✅     |
+| `server/api/admin/users/[id].put.ts`          | ✅     |
+| `server/api/admin/users/[id].delete.ts`       | ✅     |
+| `server/api/admin/votes/index.get.ts`         | ✅     |
+| `server/api/admin/votes/[id].put.ts`          | ✅     |
+| `server/api/admin/votes/[id].delete.ts`       | ✅     |
 
-**Layout admin:**
-- Sidebar izquierdo con navegación: **Usuarios | Themes**
-- Header con nombre del admin y botón de logout
-- Fondo `#0A0A0A`, sidebar `#141414`
+**Pendiente:**
+- Endpoints CRUD de themes (`server/api/themes/`) — los themes se gestionan actualmente directo desde el cliente en `pages/admin/themes.vue` mediante `useThemes.ts`; pendiente mover a endpoints server-side con validación de role admin
+
+**Descripción de secciones:**
 
 **`/admin/usuarios` (role: admin):**
-- Tabla paginada (10 por página): ID, nombre, email, rol, acciones
+- Tabla con columnas: nombre, email, rol, acciones
 - Acciones: **Editar** (modal inline) | **Eliminar** (confirmación)
 - Botón "Añadir usuario" → modal con formulario completo
-- Filtro por rol y búsqueda por nombre/email
+- Búsqueda por nombre/email
+
+**`/admin/votaciones` (role: admin):**
+- Tabla con columnas: usuario, theme votado, fecha
+- Acciones: **Editar** (cambiar theme via dropdown) | **Eliminar** (con confirmación)
+- Al editar/eliminar se ajustan automáticamente los `likes` de los themes afectados
 
 **`/admin/themes` (role: admin):**
 - Tabla paginada: orden, imagen thumb, título, likes, visible, acciones
 - Acciones: **Editar** | **Eliminar** (confirmación) | **Toggle visible**
 - Botón "Añadir theme" → formulario completo
-- Drag & drop para reordenar themes (actualiza `order`)
+- Drag & drop para reordenar themes
 
-**`/admin/usuario` (role: user) — pendiente de crear:**
-- Muestra solo sus propios datos
-- Puede editar nombre y foto
-- Puede borrar su cuenta (elimina su voto, resta likes)
-- Puede ver qué theme votó
+**`/admin/usuario` (role: user):**
+- Datos personales: nombre y email (editables)
+- Cambio de contraseña
+- Voto actual: muestra el theme votado + dropdown para cambiarlo
+- Eliminar cuenta (elimina su voto y resta likes al theme correspondiente)
 - **Nunca puede ver ni modificar themes ni otros usuarios**
-- **No puede cambiar su rol — siempre `user`, nunca `admin`** (validar tanto en frontend como en el endpoint `PUT /api/profile`)
 
 ---
 
@@ -343,15 +339,15 @@ const { hasVoted, currentVoteThemeId, voteCount, castVote, removeVote } = useVot
 Fase 1 (secuencial):           ✅ COMPLETADA
   └── AGENT 1 — Setup & Scaffolding
 
-Fase 2 (paralelo):             🔄 EN PROGRESO
+Fase 2 (paralelo):             🔄 EN PROGRESO (falta CRUD themes server-side)
   ├── AGENT 2 — Database & API
   └── AGENT 3 — Auth & Roles   ✅
 
-Fase 3 (secuencial):           🔄 EN PROGRESO (falta /admin/usuario)
+Fase 3 (secuencial):           ✅ COMPLETADA
   └── AGENT 4 — UI / Pages Frontend
 
-Fase 4 (paralelo):             🔄 EN PROGRESO
-  ├── AGENT 5 — Voting Logic
+Fase 4 (paralelo):             🔄 EN PROGRESO (falta CRUD themes server-side)
+  ├── AGENT 5 — Voting Logic   ✅
   └── AGENT 6 — Admin Panel
 
 Fase 5 (secuencial):           ⏳ PENDIENTE
@@ -364,13 +360,8 @@ Fase 5 (secuencial):           ⏳ PENDIENTE
 
 En este orden:
 
-1. **Completar API de themes** (`server/api/themes/`) — CRUD completo con validación de role admin
-2. **Completar API de votación** (`server/api/vote/[themeId].post.ts`) — UPSERT con ajuste de likes
-3. **Completar API de admin users** — GET lista paginada, PUT editar
-4. **Crear API de perfil** (`server/api/profile/`) — para usuarios `role: user`
-5. **Crear `pages/admin/usuario.vue`** — perfil propio para `role: user`
-6. **Conectar `useVotes.ts`** al endpoint real
-7. **Ejecutar AGENT 7** — QA & Polish final
+1. **Completar API de themes** (`server/api/themes/`) — CRUD completo con validación de role admin server-side
+2. **Ejecutar AGENT 7** — QA & Polish final
 
 ---
 
@@ -384,8 +375,9 @@ En este orden:
 6. Documentar decisiones técnicas no obvias con comentarios breves en el código
 7. Ante cualquier ambigüedad en `prompt.md`, elegir la solución más simple que cumpla el objetivo
 8. No instalar librerías sin verificar que no hay alternativa ya incluida en el stack
-9. Usar `serverSupabaseServiceRole` solo en endpoints admin; `serverSupabaseClient` para el resto
+9. Usar `serverSupabaseServiceRole` solo en endpoints admin; Bearer token para endpoints de perfil
 10. Validar siempre el `role` del usuario en los endpoints antes de ejecutar operaciones privilegiadas
+11. La tabla `profiles` no existe — todos los datos de usuario se leen/escriben en `auth.users` vía Admin API
 
 ---
 
@@ -417,7 +409,7 @@ refugallo/
 ├── tailwind.config.ts         ✅
 ├── app.vue                    ✅
 ├── supabase/
-│   ├── schema.sql             ✅ (themes, profiles, votes con RLS)
+│   ├── schema.sql             ✅ (themes, votes con RLS; profiles eliminada)
 │   └── seed.sql               ✅
 ├── server/
 │   └── api/
@@ -427,20 +419,19 @@ refugallo/
 │       │   ├── [id].get.ts    ⏳
 │       │   ├── [id].put.ts    ⏳
 │       │   └── [id].delete.ts ⏳
-│       ├── ranking/
-│       │   └── index.get.ts   ⏳
-│       ├── vote/
-│       │   ├── [themeId].post.ts ⏳
-│       │   └── index.delete.ts   ⏳
 │       ├── profile/
-│       │   ├── index.get.ts   ⏳
-│       │   ├── index.put.ts   ⏳
-│       │   └── index.delete.ts ⏳
+│       │   ├── index.get.ts   ✅
+│       │   ├── index.put.ts   ✅
+│       │   └── index.delete.ts ✅
 │       └── admin/
-│           └── users/
-│               ├── index.get.ts    ⏳
-│               ├── index.post.ts   ✅
-│               ├── [id].put.ts     ⏳
+│           ├── users/
+│           │   ├── index.get.ts    ✅
+│           │   ├── index.post.ts   ✅
+│           │   ├── [id].put.ts     ✅
+│           │   └── [id].delete.ts  ✅
+│           └── votes/
+│               ├── index.get.ts    ✅
+│               ├── [id].put.ts     ✅
 │               └── [id].delete.ts  ✅
 ├── middleware/
 │   ├── auth.ts                ✅
@@ -448,17 +439,17 @@ refugallo/
 ├── composables/
 │   ├── useAuth.ts             ✅
 │   ├── useThemes.ts           ✅
-│   └── useVotes.ts            ✅ (conectar a API real pendiente)
+│   └── useVotes.ts            ✅
 ├── stores/
 │   └── toast.ts               ✅
 ├── types/
-│   ├── database.types.ts      ✅
+│   ├── database.types.ts      ✅ (sin profiles)
 │   └── index.ts               ✅
 ├── utils/
 │   └── textChunker.ts         ✅
 ├── layouts/
 │   ├── default.vue            ✅
-│   └── admin.vue              ✅
+│   └── admin.vue              ✅ (nav: Dashboard, Usuarios, Themes, Votaciones)
 ├── pages/
 │   ├── index.vue              ✅
 │   ├── ranking.vue            ✅
@@ -474,7 +465,8 @@ refugallo/
 │       ├── index.vue          ✅
 │       ├── usuarios.vue       ✅
 │       ├── themes.vue         ✅
-│       └── usuario.vue        ⏳ (perfil para role: user)
+│       ├── usuario.vue        ✅
+│       └── votaciones.vue     ✅
 └── components/
     ├── App/
     │   ├── AppHeader.vue      ✅
