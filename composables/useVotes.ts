@@ -24,13 +24,14 @@ export const useVotes = () => {
 
   // Devuelve el theme_id por el que el usuario ha votado, o null si no ha votado
   async function getCurrentVote(): Promise<number | null> {
-    if (!user.value?.id) return null
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user?.id) return null
     const { data } = await supabase
       .from('votes')
       .select('theme_id')
-      .eq('user_id', user.value.id)
+      .eq('user_id', session.user.id)
       .maybeSingle()
-    return data?.theme_id ?? null
+    return (data as { theme_id: number } | null)?.theme_id ?? null
   }
 
   // Comprueba si el voto activo del usuario es por este theme concreto

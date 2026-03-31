@@ -161,12 +161,18 @@ const heroEl = ref<HTMLElement | null>(null)
 const thumbsEl = ref<HTMLElement | null>(null)
 const votingId = ref<number | null>(null)
 const userVoteId = ref<number | null>(null)
+const user = useSupabaseUser()
 
 let heroSwiper: Swiper | null = null
 let thumbsSwiper: Swiper | null = null
 
+// Recupera el voto cuando el usuario está disponible (incluso tras un refresh)
+watch(user, async (newUser) => {
+  userVoteId.value = newUser ? await getCurrentVote() : null
+}, { immediate: true })
+
 onMounted(async () => {
-  ;[themes.value, userVoteId.value] = await Promise.all([getThemes(), getCurrentVote()])
+  themes.value = await getThemes()
 
   await nextTick()
 
