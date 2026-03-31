@@ -1,15 +1,15 @@
 <template>
-  <div class="flex flex-col gap-6 max-w-xl">
+  <div class="flex flex-col gap-6 w-full max-w-xl">
     <div>
       <h1 class="font-headline text-4xl text-white tracking-widest">MI VOTO</h1>
       <p class="text-text-muted mt-1">Consulta y cambia el theme por el que has votado.</p>
     </div>
 
     <!-- Voto actual -->
-    <div class="bg-bg-elevated border border-border-dark rounded-xl p-6 flex flex-col gap-4">
+    <div class="bg-bg-elevated border border-border-dark rounded-xl p-4 sm:p-6 flex flex-col gap-4">
       <h2 class="text-sm font-medium text-text-muted uppercase tracking-wider">Voto actual</h2>
 
-      <div v-if="votedTheme" class="flex items-center gap-4">
+      <div v-if="votedTheme" class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <img
           v-if="votedTheme.thumbImg"
           :src="votedTheme.thumbImg"
@@ -22,20 +22,20 @@
         </div>
         <NuxtLink
           :to="`/theme/${votedTheme.id}`"
-          class="text-brand text-sm hover:underline shrink-0"
+          class="text-brand text-sm hover:underline self-start sm:self-auto shrink-0"
         >
           Ver theme
         </NuxtLink>
       </div>
 
-      <div v-else class="flex items-center gap-3 text-text-muted">
+      <div v-else class="flex flex-wrap items-center gap-2 text-text-muted">
         <span class="text-sm">Aún no has votado por ningún theme.</span>
         <NuxtLink to="/" class="text-brand text-sm hover:underline">Ver themes</NuxtLink>
       </div>
     </div>
 
     <!-- Cambiar voto -->
-    <div class="bg-bg-elevated border border-border-dark rounded-xl p-6 flex flex-col gap-4">
+    <div class="bg-bg-elevated border border-border-dark rounded-xl p-4 sm:p-6 flex flex-col gap-4">
       <h2 class="text-sm font-medium text-text-muted uppercase tracking-wider">
         {{ votedTheme ? 'Cambiar voto' : 'Emitir voto' }}
       </h2>
@@ -102,7 +102,7 @@ definePageMeta({ layout: 'admin', middleware: 'auth', ssr: false })
 useHead({ title: 'Mi voto — Refugallo' })
 
 const supabase = useSupabaseClient<Database>()
-const { user } = useAuth()
+useAuth()
 const { vote } = useVotes()
 const { getThemes } = useThemes()
 
@@ -121,7 +121,7 @@ async function loadVote() {
     .eq('user_id', userId)
     .maybeSingle()
 
-  const themeId = voteData?.theme_id ?? null
+  const themeId = (voteData as { theme_id: number } | null)?.theme_id ?? null
   if (themeId) {
     const { data } = await supabase.from('themes').select('*').eq('id', themeId).single()
     votedTheme.value = data as Theme | null
