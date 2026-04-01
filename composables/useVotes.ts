@@ -6,10 +6,7 @@ export const useVotes = () => {
   const toast = useToastStore()
 
   async function vote(themeId: number): Promise<boolean> {
-    if (!user.value) {
-      await navigateTo('/registro')
-      return false
-    }
+    if (!user.value) return false
 
     const { error } = await (supabase as any).rpc('vote_theme', { p_theme_id: themeId })
 

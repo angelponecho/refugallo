@@ -174,13 +174,13 @@
 import { UsersIcon, LayoutGridIcon, LogOutIcon, ImageIcon, UserIcon, BarChart2Icon, MenuIcon } from 'lucide-vue-next'
 
 const route = useRoute()
-const { profile, logout, isAdmin, fetchProfile } = useAuth()
+const { profile, user, logout, isAdmin, fetchProfile } = useAuth()
 
 const collapsed = ref(false)
 
 onMounted(fetchProfile)
 
-const adminName = computed(() => profile.value?.name ?? 'Admin')
+const adminName = computed(() => profile.value?.name ?? user.value?.user_metadata?.name ?? 'Admin')
 const adminInitial = computed(() => adminName.value.charAt(0).toUpperCase())
 
 const pageTitles: Record<string, string> = {

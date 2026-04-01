@@ -92,8 +92,8 @@ const { y } = useWindowScroll()
 const isScrolled = computed(() => y.value > 50)
 const menuOpen = ref(false)
 
-const { isLoggedIn, isAdmin, profile, logout, fetchProfile } = useAuth()
-const userName = computed(() => profile.value?.name ?? 'Usuario')
+const { isLoggedIn, isAdmin, profile, user, logout, fetchProfile } = useAuth()
+const userName = computed(() => profile.value?.name ?? user.value?.user_metadata?.name ?? 'Usuario')
 const userInitial = computed(() => userName.value.charAt(0).toUpperCase())
 const userProfileLink = computed(() => isAdmin.value ? '/admin' : '/admin/usuario')
 

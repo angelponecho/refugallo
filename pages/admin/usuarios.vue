@@ -68,6 +68,13 @@
         <AppInput v-model="form.password" label="Contraseña" type="password" placeholder="Mínimo 6 caracteres" required />
       </template>
       <AppInput v-model="form.name" label="Nombre" placeholder="Nombre del usuario" required />
+      <AppInput
+        v-if="editingUser"
+        v-model="form.password"
+        label="Nueva contraseña"
+        type="password"
+        placeholder="Dejar en blanco para no cambiar"
+      />
       <div class="flex flex-col gap-1.5">
         <label class="text-sm font-medium text-text-muted" for="role-select">Rol</label>
         <select
@@ -145,7 +152,7 @@ function openCreate() {
 
 function openEdit(user: UserRow) {
   editingUser.value = user
-  Object.assign(form, { email: '', password: '', name: user.name ?? '', role: user.role })
+  Object.assign(form, { email: '', password: '', name: user.name ?? '', role: user.role as 'user' | 'admin' })
   modalOpen.value = true
 }
 
@@ -155,7 +162,7 @@ async function handleSave() {
     if (editingUser.value) {
       await $fetch(`/api/admin/users/${editingUser.value.id}`, {
         method: 'PUT',
-        body: { name: form.name, role: form.role },
+        body: { name: form.name, role: form.role, password: form.password || undefined },
       })
       toast.show('Usuario actualizado', 'success')
     }

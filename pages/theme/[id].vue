@@ -35,7 +35,13 @@
 
                   <!-- Último slide: botones de acción -->
                   <div v-if="index === textSlides.length - 1" class="flex gap-4 mt-12 flex-wrap items-center">
-                    <span v-if="votedForThis" class="text-brand font-semibold text-lg">Tu elección</span>
+                    <!-- Registrado: ya votó este theme -->
+                    <span v-if="user && votedForThis" class="text-brand font-semibold text-lg">Tu elección</span>
+                    <!-- Anónimo: ya votó este theme -->
+                    <span v-else-if="!user && anonVotedThis" class="text-brand font-semibold text-lg">Tu voto</span>
+                    <!-- Anónimo: ya votó pero otro theme -->
+                    <span v-else-if="!user && anonVoteId !== null" class="text-text-muted text-sm">Ya has votado en esta encuesta</span>
+                    <!-- Botón votar -->
                     <AppButton
                       v-else
                       size="lg"
@@ -83,20 +89,38 @@ import 'swiper/css/pagination'
 
 const route = useRoute()
 const { getTheme } = useThemes()
-const { vote } = useVotes()
+const { vote, getCurrentVote } = useVotes()
+const { getAnonymousVoteId, voteAnonymously } = useAnonymousVote()
 
-const id = Number(route.params.id)
-const readerEl = ref<HTMLElement | null>(null)
-const voting = ref(false)
+const id         = Number(route.params.id)
+const readerEl   = ref<HTMLElement | null>(null)
+const voting     = ref(false)
+const user       = useSupabaseUser()
+const userVoteId = ref<number | null>(null)
+const anonVoteId = ref<number | null>(null)
+
 let swiper: Swiper | null = null
 
+// --- await solo para cargar el theme; el resto de refs están declarados arriba ---
 const { data: theme, pending } = await useAsyncData(`theme-${id}`, () => getTheme(id))
 
 useHead(() => ({
   title: theme.value ? `${theme.value.title} — Refugallo` : 'Refugallo',
 }))
 
-const textSlides = computed(() => splitTextIntoChunks(theme.value?.text ?? ''))
+const textSlides    = computed(() => splitTextIntoChunks(theme.value?.text ?? ''))
+const votedForThis  = computed(() => userVoteId.value === id)
+const anonVotedThis = computed(() => anonVoteId.value === id)
+
+watch(user, async (newUser) => {
+  if (newUser) {
+    userVoteId.value = await getCurrentVote()
+    anonVoteId.value = null
+  } else {
+    userVoteId.value = null
+    anonVoteId.value = await getAnonymousVoteId()
+  }
+}, { immediate: true })
 
 onMounted(async () => {
   await nextTick()
@@ -114,7 +138,15 @@ onBeforeUnmount(() => swiper?.destroy())
 
 async function handleVote() {
   voting.value = true
-  await vote(id)
+
+  if (user.value) {
+    const success = await vote(id)
+    if (success) userVoteId.value = id
+  } else {
+    const success = await voteAnonymously(id)
+    if (success) anonVoteId.value = id
+  }
+
   voting.value = false
 }
 </script>

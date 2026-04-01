@@ -4,8 +4,101 @@
 
 Eres un desarrollador full-stack senior. Debes desarrollar una aplicación web de sistema de votaciones llamada **REFUGALLO** siguiendo estrictamente estas especificaciones. La calidad y completitud del resultado es crítica.
 
+### Si el usuario está registrado
+Si el usuario está registrado
 Cada usuario puede cambiar su voto cuando quiera. Cada vez que vota se elimina su voto al theme anterior y se añade al último theme seleccionado.
 
+### Si el usuario no está registrado
+Puede votar una vez pero una vez que vote ya no puede cambiar su voto nunca más a no ser que se registre
+Para una votación informal, hazlo por capas. No intentes “garantizar” un voto por persona; intenta poner fricción suficiente para que no sea fácil votar muchas veces.
+
+Lo más práctico
+
+Usa esta combinación:
+
+1. Cookie o token local
+Cuando alguien vota, guardas un identificador en el navegador y marcas ese cliente como “ya votó”.
+
+2. Registro en servidor
+No confíes solo en la cookie. Guarda en backend:
+
+poll_id
+client_token
+ip_hash
+user_agent_hash
+fecha
+
+3. Rate limit por IP
+Ejemplo:
+
+máximo 1 voto por encuesta por IP en 24 horas
+o 3 intentos por hora
+
+4. CAPTCHA
+Antes de aceptar el voto, para frenar bots.
+
+5. Fingerprint suave
+No hace falta algo agresivo. Basta una huella aproximada:
+
+user-agent
+idioma
+zona horaria
+resolución
+plataforma
+
+Luego haces un hash y lo guardas. Si ves mismo fingerprint + misma encuesta, lo bloqueas o lo marcas como sospechoso.
+
+Flujo recomendado
+El usuario abre la encuesta.
+El servidor genera un client_token aleatorio y lo guarda en cookie/localStorage.
+Al votar, envías:
+poll_id
+opción elegida
+client_token
+CAPTCHA
+El backend comprueba:
+si ya existe voto con ese client_token
+si esa IP ya votó
+si ese fingerprint ya votó
+Si pasa, guarda el voto y marca como usado.
+Devuelve “ya has votado” si detecta repetición.
+Qué bloquear
+
+Pon estas reglas:
+
+Bloqueo 1: mismo client_token → rechazar
+Bloqueo 2: misma IP para la misma encuesta → rechazar o limitar
+Bloqueo 3: mismo fingerprint → rechazar o marcar sospechoso
+Bloqueo 4: demasiados intentos en poco tiempo → bloqueo temporal
+Qué haría yo en una versión informal
+Cookie/localStorage
+Backend con tabla de votos
+Hash de IP
+Hash de user-agent/fingerprint
+CAPTCHA
+Rate limiting
+
+Con eso ya paras la mayoría de duplicados casuales.
+
+Ejemplo de tabla
+
+votes
+
+id
+poll_id
+choice_id
+client_token
+ip_hash
+fingerprint_hash
+created_at
+
+Índices útiles:
+
+único en (poll_id, client_token)
+índice en (poll_id, ip_hash)
+índice en (poll_id, fingerprint_hash)
+
+Si alguin no registrado en el teme apareceran los votos acumulados bajo el nombre de "anonimo"  por ejemplo : theme 1 votaciones:23 nombre anonimo
 ---
 
 ## TECNOLOGÍA
