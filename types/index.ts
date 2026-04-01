@@ -16,9 +16,8 @@ export interface Theme {
 export interface Profile {
   id: string
   name: string | null
-  photo: string | null
+  email: string | null
   role: 'user' | 'admin'
-  created_at: string
 }
 
 export interface Vote {

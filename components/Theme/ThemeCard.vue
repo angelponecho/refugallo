@@ -33,8 +33,13 @@
           <span>{{ theme.likes }} votos</span>
         </div>
 
+        <span
+          v-if="showVoteButton && isUserVote"
+          class="text-brand text-sm font-semibold"
+        >Tu elección</span>
+
         <AppButton
-          v-if="showVoteButton"
+          v-else-if="showVoteButton"
           size="sm"
           :loading="voting"
           :aria-label="`Votar por ${theme.title}`"
@@ -58,8 +63,9 @@ import type { Theme } from '~/types'
 const props = withDefaults(defineProps<{
   theme: Theme
   showVoteButton?: boolean
+  isUserVote?: boolean
   rank?: number
-}>(), { showVoteButton: false })
+}>(), { showVoteButton: false, isUserVote: false })
 
 const emit = defineEmits<{
   click: [theme: Theme]

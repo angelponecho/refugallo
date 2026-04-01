@@ -25,12 +25,12 @@
       <!-- Sesión -->
       <div class="hidden md:flex items-center gap-3 shrink-0">
         <template v-if="isLoggedIn">
-          <div class="flex items-center gap-2">
+          <NuxtLink :to="userProfileLink" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-sm font-bold" aria-hidden="true">
               {{ userInitial }}
             </div>
-            <span class="text-sm text-text-muted">{{ userName }}</span>
-          </div>
+            <span class="text-sm text-text-muted hover:text-white transition-colors">{{ userName }}</span>
+          </NuxtLink>
           <AppButton variant="ghost" size="sm" @click="logout">Salir</AppButton>
         </template>
         <template v-else>
@@ -66,7 +66,7 @@
         </NuxtLink>
         <div class="border-t border-border-dark pt-3 mt-1">
           <template v-if="isLoggedIn">
-            <p class="text-sm text-text-muted px-4 py-2">{{ userName }}</p>
+            <NuxtLink :to="userProfileLink" class="block text-sm text-text-muted hover:text-white px-4 py-2 transition-colors" @click="menuOpen = false">{{ userName }}</NuxtLink>
             <button
               class="w-full text-left px-4 py-3 rounded-lg text-sm text-text-muted hover:text-white hover:bg-bg-elevated transition-all"
               @click="logout"
@@ -92,9 +92,20 @@ const { y } = useWindowScroll()
 const isScrolled = computed(() => y.value > 50)
 const menuOpen = ref(false)
 
-const { isLoggedIn, profile, logout } = useAuth()
+const { isLoggedIn, isAdmin, profile, logout, fetchProfile } = useAuth()
 const userName = computed(() => profile.value?.name ?? 'Usuario')
 const userInitial = computed(() => userName.value.charAt(0).toUpperCase())
+const userProfileLink = computed(() => isAdmin.value ? '/admin' : '/admin/usuario')
+
+onMounted(async () => {
+  if (isLoggedIn.value && !profile.value) {
+    await fetchProfile()
+  }
+})
+
+watch(isLoggedIn, async (loggedIn) => {
+  if (loggedIn && !profile.value) await fetchProfile()
+})
 
 const navLinks = [
   { to: '/ranking', label: 'Ranking' },

@@ -7,19 +7,23 @@ export const useAuth = () => {
   const profile = useState<Profile | null>('profile', () => null)
 
   const isLoggedIn = computed(() => !!user.value)
-  const isAdmin = computed(() => profile.value?.role === 'admin')
+  const isAdmin = computed(() => user.value?.app_metadata?.role === 'admin')
 
   async function fetchProfile() {
-    if (!user.value) {
+    if (!user.value?.id) {
       profile.value = null
       return
     }
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.value.id)
-      .single()
-    profile.value = data as Profile | null
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      profile.value = await $fetch<Profile>('/api/profile', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+    }
+    catch {
+      profile.value = null
+    }
   }
 
   async function register(email: string, password: string, name: string) {

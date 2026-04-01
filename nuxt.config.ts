@@ -40,10 +40,14 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
   },
 
+  routeRules: {
+    '/admin/**': { ssr: false },
+  },
+
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
-    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
+    supabaseServiceKey: process.env.SUPABASE_SECRET_KEY,
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,

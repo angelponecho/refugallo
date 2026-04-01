@@ -2,18 +2,14 @@ import { serverSupabaseServiceRole } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   const admin = serverSupabaseServiceRole(event) as any
-  const body = await readBody(event)
-  const { email, password, name, role } = body
+  const id = getRouterParam(event, 'id')
+  const { name, role } = await readBody(event)
 
-  if (!email || !password || !name) {
-    throw createError({ statusCode: 400, message: 'email, password y name son obligatorios' })
-  }
+  if (!id) throw createError({ statusCode: 400, message: 'id requerido' })
+  if (!name?.trim()) throw createError({ statusCode: 400, message: 'El nombre es obligatorio' })
 
-  const { data, error } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { name },
+  const { data, error } = await admin.auth.admin.updateUserById(id, {
+    user_metadata: { name: name.trim() },
     app_metadata: { role: role === 'admin' ? 'admin' : 'user' },
   })
 

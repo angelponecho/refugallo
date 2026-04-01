@@ -11,15 +11,10 @@ export const useVotes = () => {
       return false
     }
 
-    const { error } = await supabase.rpc('vote_theme', { p_theme_id: themeId })
+    const { error } = await (supabase as any).rpc('vote_theme', { p_theme_id: themeId })
 
     if (error) {
-      if (error.code === '23505' || error.message?.includes('unique')) {
-        toast.show('Ya has votado por este tema', 'info')
-      }
-      else {
-        toast.show('Error al registrar el voto', 'error')
-      }
+      toast.show('Error al registrar el voto', 'error')
       return false
     }
 
@@ -27,16 +22,23 @@ export const useVotes = () => {
     return true
   }
 
-  async function hasVoted(themeId: number): Promise<boolean> {
-    if (!user.value) return false
+  // Devuelve el theme_id por el que el usuario ha votado, o null si no ha votado
+  async function getCurrentVote(): Promise<number | null> {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user?.id) return null
     const { data } = await supabase
       .from('votes')
-      .select('id')
-      .eq('theme_id', themeId)
-      .eq('user_id', user.value.id)
+      .select('theme_id')
+      .eq('user_id', session.user.id)
       .maybeSingle()
-    return !!data
+    return (data as { theme_id: number } | null)?.theme_id ?? null
   }
 
-  return { vote, hasVoted }
+  // Comprueba si el voto activo del usuario es por este theme concreto
+  async function hasVoted(themeId: number): Promise<boolean> {
+    const current = await getCurrentVote()
+    return current === themeId
+  }
+
+  return { vote, getCurrentVote, hasVoted }
 }

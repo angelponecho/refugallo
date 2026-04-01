@@ -34,8 +34,10 @@
                   <p class="text-text-muted text-base md:text-lg leading-relaxed whitespace-pre-line">{{ chunk }}</p>
 
                   <!-- Último slide: botones de acción -->
-                  <div v-if="index === textSlides.length - 1" class="flex gap-4 mt-12 flex-wrap">
+                  <div v-if="index === textSlides.length - 1" class="flex gap-4 mt-12 flex-wrap items-center">
+                    <span v-if="votedForThis" class="text-brand font-semibold text-lg">Tu elección</span>
                     <AppButton
+                      v-else
                       size="lg"
                       :loading="voting"
                       @click="handleVote"

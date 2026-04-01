@@ -53,29 +53,6 @@ export type Database = {
           created_at?: string
         }
       }
-      profiles: {
-        Row: {
-          id: string
-          name: string | null
-          photo: string | null
-          role: 'user' | 'admin'
-          created_at: string
-        }
-        Insert: {
-          id: string
-          name?: string | null
-          photo?: string | null
-          role?: 'user' | 'admin'
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string | null
-          photo?: string | null
-          role?: 'user' | 'admin'
-          created_at?: string
-        }
-      }
       votes: {
         Row: {
           id: number
@@ -108,8 +85,6 @@ export type Database = {
         Returns: boolean
       }
     }
-    Enums: {
-      user_role: 'user' | 'admin'
-    }
+    Enums: Record<string, never>
   }
 }
