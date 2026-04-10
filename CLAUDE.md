@@ -2,6 +2,9 @@
 
 Fuente de verdad: `prompt.md` | Arquitectura de agentes: `agents.md`
 
+> **Al iniciar cada sesión:** leer `MEMORY.md` en la raíz del proyecto antes de cualquier tarea.
+> **Durante la sesión:** cada vez que el usuario corrija algo o se aprenda algo nuevo, escribirlo en `MEMORY.md` inmediatamente.
+
 ---
 
 ## Stack tecnológico
