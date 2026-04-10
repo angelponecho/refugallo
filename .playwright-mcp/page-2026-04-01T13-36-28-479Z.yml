@@ -1,0 +1,196 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - status [ref=e67]: Refugallo — Vota por tu theme favorito
+    - generic [ref=e4]:
+      - banner [ref=e5]:
+        - generic [ref=e6]:
+          - link "REFUGALLO" [ref=e7] [cursor=pointer]:
+            - /url: /
+          - button "Abrir menú" [ref=e8] [cursor=pointer]:
+            - img [ref=e9]
+      - main [ref=e10]:
+        - generic [ref=e92]:
+          - region "Themes destacados" [ref=e93]:
+            - generic [ref=e94]:
+              - generic [ref=e95]:
+                - generic [ref=e96]:
+                  - img "INTELIGENCIA ARTIFICIAL" [ref=e97]
+                  - generic [ref=e101]:
+                    - generic [ref=e102]:
+                      - heading "INTELIGENCIA ARTIFICIAL" [level=1] [ref=e103]
+                      - paragraph [ref=e104]: El futuro ya está aquí
+                    - generic [ref=e105]:
+                      - link "Ver" [ref=e106] [cursor=pointer]:
+                        - /url: /theme/1
+                        - button "Ver" [ref=e107]
+                      - button "Votar" [ref=e108] [cursor=pointer]
+                - generic [ref=e109]:
+                  - img "CAMBIO CLIMÁTICO" [ref=e110]
+                  - generic [ref=e114]:
+                    - generic [ref=e115]:
+                      - heading "CAMBIO CLIMÁTICO" [level=1] [ref=e116]
+                      - paragraph [ref=e117]: Acción urgente necesaria
+                    - generic [ref=e118]:
+                      - link "Ver" [ref=e119] [cursor=pointer]:
+                        - /url: /theme/2
+                        - button "Ver" [ref=e120]
+                      - button "Votar" [ref=e121] [cursor=pointer]
+                - generic [ref=e122]:
+                  - img "Bosque Eterno" [ref=e123]
+                  - generic [ref=e127]:
+                    - generic [ref=e128]:
+                      - heading "Bosque Eterno" [level=1] [ref=e129]
+                      - paragraph [ref=e130]: La naturaleza recuerda
+                    - generic [ref=e131]:
+                      - link "Ver" [ref=e132] [cursor=pointer]:
+                        - /url: /theme/8
+                        - button "Ver" [ref=e133]
+                      - button "Votar" [ref=e134] [cursor=pointer]
+                - generic [ref=e135]:
+                  - img "SALUD MENTAL" [ref=e136]
+                  - generic [ref=e140]:
+                    - generic [ref=e141]:
+                      - heading "SALUD MENTAL" [level=1] [ref=e142]
+                      - paragraph [ref=e143]: La pandemia invisible
+                    - generic [ref=e144]:
+                      - link "Ver" [ref=e145] [cursor=pointer]:
+                        - /url: /theme/3
+                        - button "Ver" [ref=e146]
+                      - button "Votar" [ref=e147] [cursor=pointer]
+                - generic [ref=e148]:
+                  - img "Mar de Arena" [ref=e149]
+                  - generic [ref=e153]:
+                    - generic [ref=e154]:
+                      - heading "Mar de Arena" [level=1] [ref=e155]
+                      - paragraph [ref=e156]: Donde el desierto respira
+                    - generic [ref=e157]:
+                      - link "Ver" [ref=e158] [cursor=pointer]:
+                        - /url: /theme/9
+                        - button "Ver" [ref=e159]
+                      - button "Votar" [ref=e160] [cursor=pointer]
+                - generic [ref=e161]:
+                  - img "EDUCACIÓN DEL FUTURO" [ref=e162]
+                  - generic [ref=e166]:
+                    - generic [ref=e167]:
+                      - heading "EDUCACIÓN DEL FUTURO" [level=1] [ref=e168]
+                      - paragraph [ref=e169]: Reinventando el aprendizaje
+                    - generic [ref=e170]:
+                      - link "Ver" [ref=e171] [cursor=pointer]:
+                        - /url: /theme/4
+                        - button "Ver" [ref=e172]
+                      - button "Votar" [ref=e173] [cursor=pointer]
+                - generic [ref=e174]:
+                  - img "ECONOMÍA CIRCULAR" [ref=e175]
+                  - generic [ref=e179]:
+                    - generic [ref=e180]:
+                      - heading "ECONOMÍA CIRCULAR" [level=1] [ref=e181]
+                      - paragraph [ref=e182]: Producir sin destruir
+                    - generic [ref=e183]:
+                      - link "Ver" [ref=e184] [cursor=pointer]:
+                        - /url: /theme/5
+                        - button "Ver" [ref=e185]
+                      - button "Votar" [ref=e186] [cursor=pointer]
+                - generic [ref=e187]:
+                  - img "CIUDADES DEL FUTURO" [ref=e188]
+                  - generic [ref=e192]:
+                    - generic [ref=e193]:
+                      - heading "CIUDADES DEL FUTURO" [level=1] [ref=e194]
+                      - paragraph [ref=e195]: Vivir mejor en comunidad
+                    - generic [ref=e196]:
+                      - link "Ver" [ref=e197] [cursor=pointer]:
+                        - /url: /theme/6
+                        - button "Ver" [ref=e198]
+                      - button "Votar" [ref=e199] [cursor=pointer]
+              - generic "Theme anterior" [ref=e200] [cursor=pointer]:
+                - img
+              - generic "Theme siguiente" [ref=e201] [cursor=pointer]:
+                - img
+          - region "Todos los themes" [ref=e211]:
+            - generic [ref=e212]:
+              - heading "THEMES" [level=2] [ref=e213]
+              - generic [ref=e215]:
+                - button "Theme anterior" [disabled] [ref=e216]:
+                  - img [ref=e217]
+                - generic [ref=e220]:
+                  - generic [ref=e222] [cursor=pointer]:
+                    - img "INTELIGENCIA ARTIFICIAL" [ref=e223]
+                    - paragraph [ref=e225]: INTELIGENCIA ARTIFICIAL
+                  - generic [ref=e227] [cursor=pointer]:
+                    - img "CAMBIO CLIMÁTICO" [ref=e228]
+                    - paragraph [ref=e230]: CAMBIO CLIMÁTICO
+                  - generic [ref=e232] [cursor=pointer]:
+                    - img "Bosque Eterno" [ref=e233]
+                    - paragraph [ref=e235]: Bosque Eterno
+                  - generic [ref=e237] [cursor=pointer]:
+                    - img "SALUD MENTAL" [ref=e238]
+                    - paragraph [ref=e240]: SALUD MENTAL
+                  - generic [ref=e242] [cursor=pointer]:
+                    - img "Mar de Arena" [ref=e243]
+                    - paragraph [ref=e245]: Mar de Arena
+                  - generic [ref=e247] [cursor=pointer]:
+                    - img "EDUCACIÓN DEL FUTURO" [ref=e248]
+                    - paragraph [ref=e250]: EDUCACIÓN DEL FUTURO
+                  - generic [ref=e252] [cursor=pointer]:
+                    - img "ECONOMÍA CIRCULAR" [ref=e253]
+                    - paragraph [ref=e255]: ECONOMÍA CIRCULAR
+                  - generic [ref=e257] [cursor=pointer]:
+                    - img "CIUDADES DEL FUTURO" [ref=e258]
+                    - paragraph [ref=e260]: CIUDADES DEL FUTURO
+                - button "Theme siguiente" [ref=e261] [cursor=pointer]:
+                  - img [ref=e262]
+          - region "Llamada a la acción" [ref=e271]:
+            - heading "¿CUÁL ES TU THEME FAVORITO?" [level=2] [ref=e272]
+            - paragraph [ref=e273]: Regístrate gratis y vota por el theme que más te apasione. ¡Tu voto puede cambiarlo todo!
+            - link "Registrarse y votar" [ref=e274] [cursor=pointer]:
+              - /url: /registro
+              - button "Registrarse y votar" [ref=e275]
+      - contentinfo [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - link "REFUGALLO" [ref=e36] [cursor=pointer]:
+              - /url: /
+            - paragraph [ref=e37]: "Vota por los mejores themes y ayuda a decidir cuál llega al #1."
+          - generic [ref=e38]:
+            - heading "Secciones" [level=3] [ref=e39]
+            - list [ref=e40]:
+              - listitem [ref=e41]:
+                - link "Ranking" [ref=e42] [cursor=pointer]:
+                  - /url: /ranking
+              - listitem [ref=e43]:
+                - link "Quiénes somos" [ref=e44] [cursor=pointer]:
+                  - /url: /quienes-somos
+              - listitem [ref=e45]:
+                - link "Galería" [ref=e46] [cursor=pointer]:
+                  - /url: /galeria
+              - listitem [ref=e47]:
+                - link "Contacto" [ref=e48] [cursor=pointer]:
+                  - /url: /contacto
+          - generic [ref=e49]:
+            - heading "Legal" [level=3] [ref=e50]
+            - list [ref=e51]:
+              - listitem [ref=e52]:
+                - link "Política de privacidad" [ref=e53] [cursor=pointer]:
+                  - /url: /textos-legales
+              - listitem [ref=e54]:
+                - link "Gestión de cookies" [ref=e55] [cursor=pointer]:
+                  - /url: /politica-de-cookies
+          - generic [ref=e56]:
+            - heading "Síguenos en" [level=3] [ref=e57]
+            - generic [ref=e58]:
+              - link "Síguenos en Facebook" [ref=e59] [cursor=pointer]:
+                - /url: https://facebook.com
+                - img [ref=e60]
+              - link "Síguenos en Instagram" [ref=e62] [cursor=pointer]:
+                - /url: https://instagram.com
+                - img [ref=e63]
+        - generic [ref=e66]: © 2026 Refugallo. Todos los derechos reservados.
+  - generic:
+    - img
+  - generic [ref=e68]:
+    - button "Toggle Nuxt DevTools" [ref=e69] [cursor=pointer]:
+      - img [ref=e70]
+    - generic "Page load time" [ref=e73]:
+      - generic [ref=e74]: "44"
+      - generic [ref=e75]: ms
+    - button "Toggle Component Inspector" [ref=e77] [cursor=pointer]:
+      - img [ref=e78]

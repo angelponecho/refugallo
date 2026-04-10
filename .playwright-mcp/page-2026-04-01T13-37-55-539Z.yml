@@ -1,0 +1,77 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - link "REFUGALLO" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - button "Abrir menú" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+  - main [ref=e10]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e18]:
+          - generic [ref=e20]: 1 / 4
+          - heading "INTELIGENCIA ARTIFICIAL" [level=1] [ref=e22]
+          - paragraph [ref=e23]: El futuro ya está aquí
+          - paragraph [ref=e24]: "La inteligencia artificial está transformando cada aspecto de nuestra vida cotidiana. Desde los asistentes virtuales que nos ayudan a organizar el día hasta los algoritmos que predicen patrones climáticos con precisión milimétrica, la IA ha dejado de ser ciencia ficción para convertirse en la columna vertebral de la civilización digital. Los modelos de lenguaje como GPT y Claude están revolucionando la forma en que interactuamos con la información. Ya no buscamos, preguntamos. Ya no leemos manuales, conversamos. Esta transición no es simplemente tecnológica: es cultural, filosófica y profundamente humana."
+        - generic [ref=e28]:
+          - generic [ref=e30]: 2 / 4
+          - heading "INTELIGENCIA ARTIFICIAL" [level=1] [ref=e32]
+          - paragraph [ref=e33]: El futuro ya está aquí
+          - paragraph [ref=e34]: "El mercado laboral se enfrenta a una metamorfosis sin precedentes. Algunas profesiones desaparecerán, otras evolucionarán, y surgirán roles que hoy ni siquiera podemos imaginar. La pregunta no es si la IA cambiará el trabajo, sino cómo nos preparamos para ese cambio con dignidad y visión. En el ámbito de la salud, los algoritmos de diagnóstico están igualando e incluso superando a médicos especialistas en la detección temprana de enfermedades. Scans de retina que detectan diabetes, análisis de biopsias que identifican cánceres en estadios iniciales, predicciones de riesgo cardiovascular basadas en miles de variables: la IA está salvando vidas hoy, no mañana."
+        - generic [ref=e38]:
+          - generic [ref=e40]: 3 / 4
+          - heading "INTELIGENCIA ARTIFICIAL" [level=1] [ref=e42]
+          - paragraph [ref=e43]: El futuro ya está aquí
+          - paragraph [ref=e44]: Sin embargo, el camino no está exento de peligros. Los sesgos algorítmicos pueden perpetuar desigualdades históricas. La concentración de poder en pocas corporaciones tecnológicas plantea preguntas fundamentales sobre gobernanza y democracia. Y la posibilidad de sistemas autónomos con capacidades superiores a las humanas nos obliga a repensar qué significa ser inteligente, consciente y responsable. El debate sobre la regulación de la IA está en su punto más álgido. Europa avanza con su AI Act, Estados Unidos oscila entre la innovación sin frenos y la supervisión cautelosa, China apuesta por la soberanía tecnológica nacional. El resultado de estas decisiones políticas moldeará el mundo en que vivirán nuestros hijos.
+        - generic [ref=e48]:
+          - generic [ref=e50]: 4 / 4
+          - heading "INTELIGENCIA ARTIFICIAL" [level=1] [ref=e52]
+          - paragraph [ref=e53]: El futuro ya está aquí
+          - paragraph [ref=e54]: "Lo que está claro es que no podemos permitirnos ser espectadores pasivos de esta revolución. La IA es una herramienta, y como toda herramienta, su valor depende de quién la empuña y con qué propósito. Educar, debatir, participar: estas son las acciones que determinarán si la IA se convierte en el mayor aliado de la humanidad o en su mayor amenaza."
+          - generic [ref=e55]:
+            - button "Votar por este theme" [ref=e56] [cursor=pointer]
+            - link "Volver al inicio" [ref=e57] [cursor=pointer]:
+              - /url: /
+              - button "Volver al inicio" [ref=e58]
+      - generic "Página anterior" [ref=e59] [cursor=pointer]
+      - generic "Página siguiente" [ref=e60] [cursor=pointer]
+  - contentinfo [ref=e61]:
+    - generic [ref=e62]:
+      - generic [ref=e63]:
+        - link "REFUGALLO" [ref=e64] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=e65]: "Vota por los mejores themes y ayuda a decidir cuál llega al #1."
+      - generic [ref=e66]:
+        - heading "Secciones" [level=3] [ref=e67]
+        - list [ref=e68]:
+          - listitem [ref=e69]:
+            - link "Ranking" [ref=e70] [cursor=pointer]:
+              - /url: /ranking
+          - listitem [ref=e71]:
+            - link "Quiénes somos" [ref=e72] [cursor=pointer]:
+              - /url: /quienes-somos
+          - listitem [ref=e73]:
+            - link "Galería" [ref=e74] [cursor=pointer]:
+              - /url: /galeria
+          - listitem [ref=e75]:
+            - link "Contacto" [ref=e76] [cursor=pointer]:
+              - /url: /contacto
+      - generic [ref=e77]:
+        - heading "Legal" [level=3] [ref=e78]
+        - list [ref=e79]:
+          - listitem [ref=e80]:
+            - link "Política de privacidad" [ref=e81] [cursor=pointer]:
+              - /url: /textos-legales
+          - listitem [ref=e82]:
+            - link "Gestión de cookies" [ref=e83] [cursor=pointer]:
+              - /url: /politica-de-cookies
+      - generic [ref=e84]:
+        - heading "Síguenos en" [level=3] [ref=e85]
+        - generic [ref=e86]:
+          - link "Síguenos en Facebook" [ref=e87] [cursor=pointer]:
+            - /url: https://facebook.com
+            - img [ref=e88]
+          - link "Síguenos en Instagram" [ref=e90] [cursor=pointer]:
+            - /url: https://instagram.com
+            - img [ref=e91]
+    - generic [ref=e94]: © 2026 Refugallo. Todos los derechos reservados.

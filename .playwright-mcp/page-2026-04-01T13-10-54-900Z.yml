@@ -1,0 +1,86 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - link "REFUGALLO" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - navigation "Navegación principal" [ref=e8]:
+        - link "Ranking" [ref=e9] [cursor=pointer]:
+          - /url: /ranking
+        - link "Quiénes somos" [ref=e10] [cursor=pointer]:
+          - /url: /quienes-somos
+        - link "Galería" [ref=e11] [cursor=pointer]:
+          - /url: /galeria
+        - link "Contacto" [ref=e12] [cursor=pointer]:
+          - /url: /contacto
+      - link "Iniciar sesión" [ref=e14] [cursor=pointer]:
+        - /url: /registro
+        - button "Iniciar sesión" [ref=e15]
+  - main [ref=e16]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - link "REFUGALLO" [ref=e20] [cursor=pointer]:
+          - /url: /
+        - heading "Crea tu cuenta gratis" [level=1] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - button "Registrarse" [ref=e24] [cursor=pointer]
+          - button "Iniciar sesión" [ref=e25] [cursor=pointer]
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]: Nombre *
+            - textbox "Nombre" [ref=e29]:
+              - /placeholder: Tu nombre
+          - generic [ref=e30]:
+            - generic [ref=e31]: Email *
+            - textbox "Email" [ref=e32]:
+              - /placeholder: tu@email.com
+          - generic [ref=e33]:
+            - generic [ref=e34]: Contraseña *
+            - textbox "Contraseña" [ref=e35]:
+              - /placeholder: Mínimo 6 caracteres
+          - button "Crear cuenta" [ref=e36] [cursor=pointer]
+          - paragraph [ref=e37]:
+            - text: Al registrarte aceptas nuestra
+            - link "política de privacidad" [ref=e38] [cursor=pointer]:
+              - /url: /textos-legales
+            - text: .
+  - contentinfo [ref=e39]:
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - link "REFUGALLO" [ref=e42] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=e43]: "Vota por los mejores themes y ayuda a decidir cuál llega al #1."
+      - generic [ref=e44]:
+        - heading "Secciones" [level=3] [ref=e45]
+        - list [ref=e46]:
+          - listitem [ref=e47]:
+            - link "Ranking" [ref=e48] [cursor=pointer]:
+              - /url: /ranking
+          - listitem [ref=e49]:
+            - link "Quiénes somos" [ref=e50] [cursor=pointer]:
+              - /url: /quienes-somos
+          - listitem [ref=e51]:
+            - link "Galería" [ref=e52] [cursor=pointer]:
+              - /url: /galeria
+          - listitem [ref=e53]:
+            - link "Contacto" [ref=e54] [cursor=pointer]:
+              - /url: /contacto
+      - generic [ref=e55]:
+        - heading "Legal" [level=3] [ref=e56]
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Política de privacidad" [ref=e59] [cursor=pointer]:
+              - /url: /textos-legales
+          - listitem [ref=e60]:
+            - link "Gestión de cookies" [ref=e61] [cursor=pointer]:
+              - /url: /politica-de-cookies
+      - generic [ref=e62]:
+        - heading "Síguenos en" [level=3] [ref=e63]
+        - generic [ref=e64]:
+          - link "Síguenos en Facebook" [ref=e65] [cursor=pointer]:
+            - /url: https://facebook.com
+            - img [ref=e66]
+          - link "Síguenos en Instagram" [ref=e68] [cursor=pointer]:
+            - /url: https://instagram.com
+            - img [ref=e69]
+    - generic [ref=e72]: © 2026 Refugallo. Todos los derechos reservados.

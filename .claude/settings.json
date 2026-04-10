@@ -16,17 +16,20 @@
           {
             "type": "prompt",
             "prompt": "Analiza el archivo editado que aparece en tool_input. Si la extensión es .vue, .css o .ts, revisa el código en busca de estos problemas de estándares web y rendimiento:\n\n1. **Accesibilidad (a11y):** ¿Faltan atributos alt en imágenes? ¿Los botones tienen aria-label si no tienen texto visible? ¿Se usan roles ARIA correctamente? ¿El contraste de colores es suficiente (4.5:1 mínimo)?\n2. **HTML Semántico:** ¿Se usan etiquetas semánticas correctas (nav, main, section, article, header, footer)? ¿Se evita el abuso de divs?\n3. **Rendimiento:** ¿Hay imports innecesarios o muy pesados? ¿Las imágenes usan lazy loading? ¿Se usa el componente <NuxtImg> en lugar de <img> donde sea posible?\n4. **SEO:** ¿Las páginas tienen useHead() con title y meta description? ¿Los headings siguen jerarquía correcta (h1 > h2 > h3)?\n5. **Tailwind:** ¿Se usan valores hardcodeados en style= cuando debería usarse una clase Tailwind?\n\nSi encuentras algún problema, muéstralo de forma concisa con el número de línea y una sugerencia de corrección. Si no hay problemas, no digas nada. Solo reporta si hay algo accionable.",
-            "statusMessage": "Revisando estándares web...",
-            "timeout": 30
+            "timeout": 30,
+            "statusMessage": "Revisando estándares web..."
           },
           {
             "type": "prompt",
             "prompt": "Analiza el archivo editado que aparece en tool_input. Si la extensión es .vue o .css, revisa el código en busca de inconsistencias de diseño visual respecto a la guía de estilos del proyecto:\n\n**Paleta de colores permitida:**\n- Fondos: #0A0A0A, #141414, #1E1E1E\n- Color principal: #0094C6 (hover: #00B4F0)\n- Textos: #FFFFFF, #A3A3A3\n- Bordes: #2A2A2A\n\n**Tipografía:**\n- Titulares: Bebas Neue (font-['Bebas_Neue'] o la clase configurada)\n- Cuerpo: Inter\n\n**Revisa:**\n1. **Colores fuera de paleta:** ¿Se usan colores distintos a los definidos sin justificación?\n2. **Valores inline:** ¿Hay style= con colores o tamaños que deberían ser clases Tailwind?\n3. **Botones:** ¿Los botones primarios usan bg-[#0094C6]? ¿Los secundarios usan border-white bg-transparent?\n4. **Tipografía incorrecta:** ¿Se usa la fuente correcta para titulares vs cuerpo?\n5. **Animaciones:** ¿Los elementos interactivos tienen clases transition para suavizar cambios?\n6. **Responsive:** ¿Los elementos tienen variantes responsive (sm:/md:/lg:) donde es necesario?\n\nSolo reporta si encuentras algo concreto y accionable con número de línea. Si no hay problemas de diseño, no digas nada.",
-            "statusMessage": "Revisando consistencia de diseño...",
-            "timeout": 30
+            "timeout": 30,
+            "statusMessage": "Revisando consistencia de diseño..."
           }
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "playwright@claude-plugins-official": true
   }
 }

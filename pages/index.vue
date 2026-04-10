@@ -40,9 +40,20 @@
                   <NuxtLink :to="`/theme/${theme.id}`">
                     <AppButton size="lg">Ver</AppButton>
                   </NuxtLink>
-                  <span v-if="userVoteId === theme.id" class="text-brand font-semibold text-lg">
+
+                  <!-- Usuario registrado: su elección activa -->
+                  <span v-if="user && userVoteId === theme.id" class="text-brand font-semibold text-lg">
                     Tu elección
                   </span>
+                  <!-- Usuario anónimo: el theme por el que ya votó -->
+                  <span v-else-if="!user && anonVoteId === theme.id" class="text-brand font-semibold text-lg">
+                    Tu voto
+                  </span>
+                  <!-- Usuario anónimo que ya votó otro theme: no puede votar de nuevo -->
+                  <span v-else-if="!user && anonVoteId !== null" class="text-text-muted text-sm">
+                    Ya votaste
+                  </span>
+                  <!-- Botón votar (registrado sin voto aquí, o anónimo que aún no ha votado) -->
                   <AppButton
                     v-else
                     size="lg"
@@ -155,20 +166,30 @@ useHead({ title: 'Refugallo — Vota por tu theme favorito' })
 
 const { getThemes } = useThemes()
 const { vote, getCurrentVote } = useVotes()
+const { getAnonymousVoteId, voteAnonymously } = useAnonymousVote()
 
-const themes = ref<Theme[]>([])
-const heroEl = ref<HTMLElement | null>(null)
-const thumbsEl = ref<HTMLElement | null>(null)
-const votingId = ref<number | null>(null)
+const themes    = ref<Theme[]>([])
+const heroEl    = ref<HTMLElement | null>(null)
+const thumbsEl  = ref<HTMLElement | null>(null)
+const votingId  = ref<number | null>(null)
+// Para usuario registrado: theme_id de su voto activo
 const userVoteId = ref<number | null>(null)
+// Para usuario anónimo: theme_id por el que votó (null si no ha votado)
+const anonVoteId = ref<number | null>(null)
 const user = useSupabaseUser()
 
 let heroSwiper: Swiper | null = null
 let thumbsSwiper: Swiper | null = null
 
-// Recupera el voto cuando el usuario está disponible (incluso tras un refresh)
+// Voto registrado: se recarga cuando cambia la sesión
 watch(user, async (newUser) => {
-  userVoteId.value = newUser ? await getCurrentVote() : null
+  if (newUser) {
+    userVoteId.value = await getCurrentVote()
+    anonVoteId.value = null
+  } else {
+    userVoteId.value = null
+    anonVoteId.value = await getAnonymousVoteId()
+  }
 }, { immediate: true })
 
 onMounted(async () => {
@@ -209,12 +230,30 @@ function slideTo(index: number) {
 
 async function handleVote(themeId: number) {
   votingId.value = themeId
-  const success = await vote(themeId)
-  if (success) {
-    const t = themes.value.find(t => t.id === themeId)
-    if (t) t.likes++
-    userVoteId.value = themeId
+
+  if (user.value) {
+    // Usuario registrado: voto con UPSERT (puede cambiar de theme)
+    const prevVoteId = userVoteId.value
+    const success = await vote(themeId)
+    if (success) {
+      if (prevVoteId !== null) {
+        const prev = themes.value.find(t => t.id === prevVoteId)
+        if (prev) prev.likes = Math.max(prev.likes - 1, 0)
+      }
+      const t = themes.value.find(t => t.id === themeId)
+      if (t) t.likes++
+      userVoteId.value = themeId
+    }
+  } else {
+    // Usuario anónimo: voto único, no puede cambiar
+    const success = await voteAnonymously(themeId)
+    if (success) {
+      const t = themes.value.find(t => t.id === themeId)
+      if (t) t.likes++
+      anonVoteId.value = themeId
+    }
   }
+
   votingId.value = null
 }
 </script>

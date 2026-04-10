@@ -1,0 +1,77 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - link "REFUGALLO" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - navigation "Navegación principal" [ref=e8]:
+        - link "Ranking" [ref=e9] [cursor=pointer]:
+          - /url: /ranking
+        - link "Quiénes somos" [ref=e10] [cursor=pointer]:
+          - /url: /quienes-somos
+        - link "Galería" [ref=e11] [cursor=pointer]:
+          - /url: /galeria
+        - link "Contacto" [ref=e12] [cursor=pointer]:
+          - /url: /contacto
+      - link "Iniciar sesión" [ref=e14] [cursor=pointer]:
+        - /url: /registro
+        - button "Iniciar sesión" [ref=e15]
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - region "Themes destacados" [ref=e18]:
+        - generic [ref=e19]:
+          - generic "Theme anterior" [ref=e21] [cursor=pointer]
+          - generic "Theme siguiente" [ref=e22] [cursor=pointer]
+      - region "Todos los themes" [ref=e23]:
+        - generic [ref=e24]:
+          - heading "THEMES" [level=2] [ref=e25]
+          - generic [ref=e27]:
+            - button "Theme anterior" [ref=e28] [cursor=pointer]:
+              - img [ref=e29]
+            - button "Theme siguiente" [ref=e31] [cursor=pointer]:
+              - img [ref=e32]
+      - region "Llamada a la acción" [ref=e34]:
+        - heading "¿CUÁL ES TU THEME FAVORITO?" [level=2] [ref=e35]
+        - paragraph [ref=e36]: Regístrate gratis y vota por el theme que más te apasione. ¡Tu voto puede cambiarlo todo!
+        - link "Registrarse y votar" [ref=e37] [cursor=pointer]:
+          - /url: /registro
+          - button "Registrarse y votar" [ref=e38]
+  - contentinfo [ref=e39]:
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - link "REFUGALLO" [ref=e42] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=e43]: "Vota por los mejores themes y ayuda a decidir cuál llega al #1."
+      - generic [ref=e44]:
+        - heading "Secciones" [level=3] [ref=e45]
+        - list [ref=e46]:
+          - listitem [ref=e47]:
+            - link "Ranking" [ref=e48] [cursor=pointer]:
+              - /url: /ranking
+          - listitem [ref=e49]:
+            - link "Quiénes somos" [ref=e50] [cursor=pointer]:
+              - /url: /quienes-somos
+          - listitem [ref=e51]:
+            - link "Galería" [ref=e52] [cursor=pointer]:
+              - /url: /galeria
+          - listitem [ref=e53]:
+            - link "Contacto" [ref=e54] [cursor=pointer]:
+              - /url: /contacto
+      - generic [ref=e55]:
+        - heading "Legal" [level=3] [ref=e56]
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Política de privacidad" [ref=e59] [cursor=pointer]:
+              - /url: /textos-legales
+          - listitem [ref=e60]:
+            - link "Gestión de cookies" [ref=e61] [cursor=pointer]:
+              - /url: /politica-de-cookies
+      - generic [ref=e62]:
+        - heading "Síguenos en" [level=3] [ref=e63]
+        - generic [ref=e64]:
+          - link "Síguenos en Facebook" [ref=e65] [cursor=pointer]:
+            - /url: https://facebook.com
+            - img [ref=e66]
+          - link "Síguenos en Instagram" [ref=e68] [cursor=pointer]:
+            - /url: https://instagram.com
+            - img [ref=e69]
+    - generic [ref=e72]: © 2026 Refugallo. Todos los derechos reservados.
